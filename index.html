@@ -1,0 +1,2068 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+import {
+
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
+
+} from 'recharts';
+
+import {
+
+  Coffee,
+
+  Sun,
+
+  Moon,
+
+  Flame,
+
+  Target,
+
+  CheckCircle2,
+
+  Edit3,
+
+  AlertTriangle,
+
+  Heart,
+
+  Lightbulb,
+
+  ShieldAlert,
+
+  X,
+
+  ArrowRight,
+
+  ChefHat,
+
+  Utensils,
+
+  Download,
+
+  Upload,
+
+  Save
+
+} from 'lucide-react';
+
+
+
+const dinnerSuggestions = [
+
+  // --- CENAS MUY LIGERAS (Menos de 300 kcal) ---
+
+  {
+
+    name: 'Ensalada de atún al natural con limón', calories: 250, category: 'light',
+
+    ingredients: ['2 latas de atún al natural', '1 tomate grande', 'Media cebolla morada', 'Zumo de medio limón', 'Pizca de sal y orégano'],
+
+    instructions: 'Corta el tomate y la cebolla en dados. Escurre bien el atún para que aporte pura proteína sin grasa extra y mézclalo en un bol. Aliña con el zumo de limón, sal y orégano. ¡Listo en 3 minutos!'
+
+  },
+
+  {
+
+    name: 'Crema de calabacín y tortilla de 1 huevo y 1 clara', calories: 220, category: 'light',
+
+    ingredients: ['1 calabacín mediano', 'Media cebolla', '1 huevo entero', '1 clara de huevo pasteurizada', '1 cucharadita de aceite de oliva'],
+
+    instructions: 'Hierve el calabacín y la cebolla. Tritura con un poco del agua de cocción. Haz una tortilla francesa rica en proteínas mezclando el huevo entero y la clara extra.'
+
+  },
+
+  {
+
+    name: 'Pechuga de pavo a la plancha con espárragos', calories: 280, category: 'light',
+
+    ingredients: ['150g de pechuga de pavo', '1 manojo de espárragos trigueros', 'Ajo en polvo', '1 cucharadita de aceite'],
+
+    instructions: 'Lava y corta la parte dura de los espárragos. Hazlos a la plancha. En la misma sartén, haz la pechuga de pavo vuelta y vuelta con ajo en polvo y sal. Pura proteína y fibra.'
+
+  },
+
+  {
+
+    name: 'Merluza al papillote con cherrys', calories: 260, category: 'light',
+
+    ingredients: ['1 lomo grande de merluza (180g)', '8 tomatitos cherry', 'Orégano', 'Papel de aluminio o vegetal'],
+
+    instructions: 'Pon la merluza sobre el papel, añade los cherrys cortados por la mitad, sal y orégano. Cierra el papel haciendo un paquete hermético y hornea o haz a la sartén tapada unos 12 minutos.'
+
+  },
+
+  {
+
+    name: 'Gazpacho suave y ensalada con huevo duro', calories: 250, category: 'light',
+
+    ingredients: ['1 vaso de gazpacho comercial suave o casero', 'Lechuga variada', '1 huevo cocido', 'Vinagreta ligera'],
+
+    instructions: 'Sirve el gazpacho bien frío. Acompaña con un bol de lechuga y el huevo cocido cortado a gajos para asegurar tu ración de proteínas.'
+
+  },
+
+  {
+
+    name: 'Ensalada de tomate y queso fresco 0%', calories: 210, category: 'light',
+
+    ingredients: ['2 tomates de ensalada', '150g de queso fresco desnatado 0%', 'Albahaca fresca', 'Unas gotas de vinagre balsámico'],
+
+    instructions: 'Corta el tomate y el queso en rodajas (el queso 0% te dará mucha proteína con casi cero grasa). Intercala las capas, añade las hojas de albahaca y unas gotas de balsámico.'
+
+  },
+
+  {
+
+    name: 'Sopa de fideos con pollo picado', calories: 250, category: 'light',
+
+    ingredients: ['1 vaso de caldo de pollo bajo en grasa', '30g de fideos finos', '80g de pollo asado o cocido desmenuzado'],
+
+    instructions: 'Lleva el caldo a ebullición. Añade los fideos y cuece 3-5 minutos. Sirve añadiendo el pollo desmenuzado al plato para un extra de saciedad.'
+
+  },
+
+  {
+
+    name: 'Lenguado a la plancha con judías verdes', calories: 240, category: 'light',
+
+    ingredients: ['1 filete de lenguado (o gallo) grande', '150g de judías verdes', 'Pimentón dulce'],
+
+    instructions: 'Cuece o calienta las judías verdes y espolvorea con pimentón. Haz el lenguado a la plancha (vuelta y vuelta, se hace muy rápido).'
+
+  },
+
+  {
+
+    name: 'Claras de huevo revueltas con espinacas y pavo', calories: 200, category: 'light',
+
+    ingredients: ['4 claras de huevo', '1 puñado grande de espinacas frescas', '50g de fiambre de pavo en tacos', 'Ajo en polvo'],
+
+    instructions: 'Saltea el pavo y las espinacas en una sartén antiadherente hasta que las espinacas reduzcan. Añade las claras y remueve constantemente hasta que cuajen.'
+
+  },
+
+  {
+
+    name: 'Pinchos de pollo al limón a la plancha', calories: 280, category: 'light',
+
+    ingredients: ['150g de pechuga de pollo en dados', 'Zumo de limón', 'Pimentón y comino', 'Pimientos asados de guarnición'],
+
+    instructions: 'Marina el pollo en el limón y las especias por 10 min. Ensarta en palillos de brocheta (opcional) y haz a la plancha. Acompaña con tiras de pimiento asado.'
+
+  },
+
+  {
+
+    name: 'Tortilla de 1 huevo y 2 claras con atún', calories: 260, category: 'light',
+
+    ingredients: ['1 huevo entero', '2 claras pasteurizadas', '1 lata de atún al natural', 'Perejil'],
+
+    instructions: 'Bate el huevo con las claras. Escurre muy bien el atún y añádelo a la mezcla con perejil. Cuaja en una sartén antiadherente con una gotita de aceite.'
+
+  },
+
+  {
+
+    name: 'Ensalada de langostinos cocidos con rúcula', calories: 220, category: 'light',
+
+    ingredients: ['150g de langostinos cocidos pelados', 'Base de rúcula', 'Tomatitos cherry', 'Limón y un hilo de aceite'],
+
+    instructions: 'Monta una cama de rúcula y cherrys. Coloca los langostinos pelados (excelente proteína baja en grasa) por encima y aliña con limón.'
+
+  },
+
+  {
+
+    name: 'Carpaccio de ternera con lascas de parmesano', calories: 290, category: 'light',
+
+    ingredients: ['100g de carpaccio de ternera (envasado)', '15g de queso parmesano', 'Rúcula', 'Limón y pimienta negra'],
+
+    instructions: 'Extiende el carpaccio en un plato plano. Pon un montoncito de rúcula en el centro, exprime limón por encima, añade pimienta y las lascas de queso.'
+
+  },
+
+  {
+
+    name: 'Salpicón de marisco rápido', calories: 250, category: 'light',
+
+    ingredients: ['100g de pulpo cocido troceado', '50g de langostinos', 'Media cebolla', 'Medio pimiento verde', 'Vinagre'],
+
+    instructions: 'Pica la cebolla y el pimiento muy finos. Mezcla con el pulpo y los langostinos. Aliña con abundante vinagre, un hilo de aceite y sal.'
+
+  },
+
+  {
+
+    name: 'Pescadilla hervida con patata mini', calories: 270, category: 'light',
+
+    ingredients: ['1 rodaja gruesa de pescadilla (o merluza)', '1 patata pequeña (80g)', 'Hoja de laurel', 'Pimentón'],
+
+    instructions: 'Cuece la patata pelada en agua con sal y laurel. Cuando falten 5 minutos, añade el pescado. Sirve escurrido con pimentón por encima.'
+
+  },
+
+  {
+
+    name: 'Rollitos de pavo rellenos de queso batido 0%', calories: 230, category: 'light',
+
+    ingredients: ['4 lonchas gruesas de pechuga de pavo (fiambre de calidad)', '100g de queso fresco batido 0%', 'Cebollino picado', 'Pimienta'],
+
+    instructions: 'Mezcla el queso batido con el cebollino y la pimienta. Unta la mezcla sobre las lonchas de pavo y enróllalas. Refrescante, rápido y altísimo en proteína.'
+
+  },
+
+  {
+
+    name: 'Filete de pollo a la plancha con rodajas de tomate', calories: 250, category: 'light',
+
+    ingredients: ['150g de pechuga de pollo', '1 tomate de ensalada grande', 'Orégano', 'Sal en escamas'],
+
+    instructions: 'Haz el filete de pollo a la plancha hasta que esté bien dorado. Corta el tomate en rodajas gruesas y acompáñalo con sal y orégano.'
+
+  },
+
+
+
+  // --- CENAS LIGERAS/MODERADAS (300 - 500 kcal) ---
+
+  {
+
+    name: 'Salmón a la plancha con brócoli', calories: 450, category: 'moderate',
+
+    ingredients: ['120g de lomo de salmón', '200g de brócoli', 'Limón', 'Sal y pimienta'],
+
+    instructions: 'Cuece el brócoli al vapor o al microondas 4-5 minutos. Haz el salmón a la plancha a fuego medio-alto para que dore por fuera. Sirve con un chorro de limón.'
+
+  },
+
+  {
+
+    name: 'Wrap integral de pollo desmenuzado y yogur', calories: 400, category: 'moderate',
+
+    ingredients: ['1 tortilla integral (wrap)', '120g de pollo desmenuzado', 'Lechuga picada', '2 cucharadas de yogur natural o griego', 'Mostaza'],
+
+    instructions: 'Mezcla el yogur con un poquito de mostaza. Unta la tortilla, añade la lechuga, el pollo rico en proteínas, enrolla y tuesta ligeramente en la sartén.'
+
+  },
+
+  {
+
+    name: 'Ensalada caprese tradicional con pechuga de pollo', calories: 480, category: 'moderate',
+
+    ingredients: ['1 tomate grande', '1 bola de mozzarella fresca (100g)', '100g de pechuga de pollo a la plancha en tiras', 'Albahaca fresca'],
+
+    instructions: 'Corta el tomate y la mozzarella en rodajas. Añade las tiras de pollo para subir las proteínas de este plato italiano. Rocía con un poquito de aceite y albahaca.'
+
+  },
+
+  {
+
+    name: 'Huevos rotos fitness sobre pimientos asados', calories: 320, category: 'moderate',
+
+    ingredients: ['2 huevos', '150g de pimientos asados (en tiras)', 'Sal en escamas', 'Pizca de pimentón'],
+
+    instructions: 'Calienta los pimientos asados. En una sartén antiadherente con una gota de aceite, haz los huevos a la plancha (tapando para cuajar la clara pero no la yema). Ponlos sobre los pimientos y rómpelos.'
+
+  },
+
+  {
+
+    name: 'Bowl de quinoa, edamames y pollo a la plancha', calories: 480, category: 'moderate',
+
+    ingredients: ['40g de quinoa (peso crudo)', 'Puñado de edamames pelados', '100g de pollo a la plancha en cubos', 'Tomatitos cherry'],
+
+    instructions: 'Cuece la quinoa. Mézclala en un bol con los edamames, los cherrys cortados y el pollo. Aliña con limón o vinagreta ligera.'
+
+  },
+
+  {
+
+    name: 'Ternera a la plancha con puré de coliflor', calories: 480, category: 'moderate',
+
+    ingredients: ['150g de filete de ternera blanca o magra', '200g de coliflor', 'Leche desnatada o vegetal', 'Pimienta negra'],
+
+    instructions: 'Hierve la coliflor hasta que esté muy blanda. Tritúrala con un chorrito de leche, sal y pimienta hasta hacer puré. Haz el filete a la plancha al punto deseado.'
+
+  },
+
+  {
+
+    name: 'Ensalada de garbanzos con atún doble', calories: 410, category: 'moderate',
+
+    ingredients: ['80g de garbanzos cocidos', 'Medio pimiento rojo picado', 'Media cebolla picada', '2 latas de atún al natural'],
+
+    instructions: 'Lava bien los garbanzos. Mezcla en un bol con la verdura picada muy fina y el atún escurrido para un chute de proteínas. Aliña con vinagre.'
+
+  },
+
+  {
+
+    name: 'Pollo al limón con arroz basmati', calories: 460, category: 'moderate',
+
+    ingredients: ['150g de pechuga de pollo cortada en tiras', 'Zumo de 1 limón', '40g de arroz basmati (crudo)', 'Ajo'],
+
+    instructions: 'Cuece el arroz. Macera el pollo 10 min en el zumo de limón y ajo picado. Haz el pollo a la sartén junto con el líquido de la maceración hasta que reduzca.'
+
+  },
+
+  {
+
+    name: 'Berenjena rellena de carne picada de pavo', calories: 440, category: 'moderate',
+
+    ingredients: ['1 berenjena pequeña', '120g de carne picada de pavo', 'Tomate triturado natural', 'Pizca de queso rallado ligero'],
+
+    instructions: 'Corta la berenjena y ásala o al microondas 10 min. Vacía la pulpa, mézclala en la sartén con la carne y el tomate. Rellena las cáscaras, pon queso y gratina 5 min.'
+
+  },
+
+  {
+
+    name: 'Hamburguesa de pavo al plato con ensalada', calories: 350, category: 'moderate',
+
+    ingredients: ['1 burger de pavo/pollo de carnicería (150g)', 'Mezcla de lechugas', 'Tomate', 'Pepino'],
+
+    instructions: 'Haz la hamburguesa a la plancha sin pan. Sirve al plato acompañada de una ensalada verde generosa para saciarte.'
+
+  },
+
+  {
+
+    name: 'Sepia a la plancha con ajo y perejil', calories: 380, category: 'moderate',
+
+    ingredients: ['200g de sepia limpia', 'Ajo picado', 'Perejil fresco', '1 cucharada de aceite de oliva'],
+
+    instructions: 'Seca muy bien la sepia con papel de cocina. Hazla a la plancha a fuego muy fuerte para que se dore y no se cueza. Al final, añade un majado de aceite, ajo y perejil.'
+
+  },
+
+  {
+
+    name: 'Lomo de bacalao al horno con pimientos', calories: 420, category: 'moderate',
+
+    ingredients: ['1 lomo de bacalao fresco o desalado (150g)', '100g de tiras de pimiento asado', 'Cebolla en juliana', 'Aceite de oliva (1 cdta)'],
+
+    instructions: 'Pon una cama de cebolla y pimientos en una fuente. Coloca el bacalao encima y hornea a 190º unos 15 minutos.'
+
+  },
+
+  {
+
+    name: 'Pechuga de pollo rellena de jamón serrano', calories: 450, category: 'moderate',
+
+    ingredients: ['1 pechuga de pollo entera abierta en libro', '2 lonchas de jamón serrano sin la grasa', '1 loncha de queso bajo en grasa', 'Ensalada de guarnición'],
+
+    instructions: 'Mete el jamón y el queso dentro de la pechuga. Cierra con palillos. Haz a la plancha lentamente para que se haga el centro.'
+
+  },
+
+  {
+
+    name: 'Fajita integral de lomo de cerdo en tiras', calories: 430, category: 'moderate',
+
+    ingredients: ['1 tortilla de trigo integral', '120g de cinta de lomo de cerdo en tiras', 'Cebolla y pimientos en tiras', 'Especias para fajitas'],
+
+    instructions: 'El lomo de cerdo es muy magro. Saltéalo a fuego fuerte con las verduras y especias. Rellena tu fajita.'
+
+  },
+
+  {
+
+    name: 'Ensalada de lentejas con huevo cocido y atún', calories: 490, category: 'moderate',
+
+    ingredients: ['80g de lentejas cocidas (bote)', '1 huevo cocido', '1 lata de atún al natural', 'Tomate y pepino en dados'],
+
+    instructions: 'Lava las lentejas. Mézclalas con el atún, el tomate y el pepino. Corona con el huevo cocido cortado en cuartos.'
+
+  },
+
+  {
+
+    name: 'Salteado de ternera magra con pimientos', calories: 460, category: 'moderate',
+
+    ingredients: ['150g de filete de ternera en tiras', 'Pimiento rojo y verde en tiras', 'Salsa de soja baja en sal'],
+
+    instructions: 'Saltea la verdura. Añade la ternera y dórala rápidamente a fuego muy alto. Añade un chorrito de soja al final.'
+
+  },
+
+  {
+
+    name: 'Tortilla de patatas "fitness" (al microondas)', calories: 400, category: 'moderate',
+
+    ingredients: ['2 huevos', '1 patata mediana', 'Media cebolla', '1 cucharadita de aceite'],
+
+    instructions: 'Pica la patata y cebolla muy finas. Ponlas en un recipiente apto para microondas con tapa, 8 minutos hasta que ablanden. Mezcla con el huevo y cuaja en sartén.'
+
+  },
+
+  {
+
+    name: 'Ensalada campera con atún doble', calories: 450, category: 'moderate',
+
+    ingredients: ['1 patata pequeña cocida', '2 latas de atún al natural', 'Tomate, pimiento, cebolla', '1 cucharada de aceite y vinagre'],
+
+    instructions: 'Trocea la patata fría y las verduras. Añade el atún escurrido para tener un plato fresco, saciante y alto en proteína.'
+
+  },
+
+  {
+
+    name: 'Dorada al horno con cama de cebolla', calories: 410, category: 'moderate',
+
+    ingredients: ['1 dorada de ración (limpia)', '1 cebolla grande en rodajas', 'Limón', 'Vino blanco (chorrito)'],
+
+    instructions: 'Cubre el fondo de la bandeja con la cebolla. Pon la dorada, hazle unos cortes y pon rodajas de limón. Hornea a 200º unos 20 min.'
+
+  },
+
+  {
+
+    name: 'Salpicón de pollo', calories: 350, category: 'moderate',
+
+    ingredients: ['150g de pechuga de pollo cocida o asada', 'Pimiento rojo y verde', 'Cebolleta', 'Vinagre y 1 cdta de aceite'],
+
+    instructions: 'Desmenuza el pollo frío. Pica toda la verdura muy fina. Mezcla bien y aliña generosamente con vinagre.'
+
+  },
+
+  {
+
+    name: 'Lubina a la espalda con un toque de ajo', calories: 400, category: 'moderate',
+
+    ingredients: ['1 lubina abierta a la espalda', '2 dientes de ajo en láminas', '1 guindilla (opcional)', '1 cucharadita de aceite'],
+
+    instructions: 'Haz la lubina a la plancha o al horno. En una sartén pequeñita, dora los ajos y vuélcalos por encima del pescado al servir.'
+
+  },
+
+  {
+
+    name: 'Wok de pavo con fideos de arroz', calories: 480, category: 'moderate',
+
+    ingredients: ['150g de pechuga de pavo en tiras', '40g de fideos de arroz', 'Zanahoria y calabacín en bastones', 'Salsa de soja'],
+
+    instructions: 'Cuece los fideos 3 min. Saltea el pavo y las verduras en un wok o sartén grande. Añade los fideos escurridos, soja y remueve.'
+
+  },
+
+
+
+  // --- CENAS CONTUNDENTES (500 - 800 kcal) ---
+
+  {
+
+    name: 'Hamburguesa de pollo con batata asada', calories: 550, category: 'heavy',
+
+    ingredients: ['1 burger de pollo de buena calidad (150g)', '1 batata mediana', 'Lechuga y tomate', 'Sin pan (o pan fino integral)'],
+
+    instructions: 'Corta la batata en bastones, échales sal, pimentón y hornéalos 25 min a 200º. Haz la hamburguesa a la plancha. Sirve al plato con la guarnición.'
+
+  },
+
+  {
+
+    name: 'Pasta integral con boloñesa de pavo magro', calories: 600, category: 'heavy',
+
+    ingredients: ['80g de pasta integral (en seco)', '120g de carne picada de pavo o pollo', 'Salsa de tomate casera o natural', 'Cebolla picada'],
+
+    instructions: 'Cuece la pasta. Sofríe la cebolla, añade la carne rica en proteína y cuando esté dorada, el tomate. Mezcla con la pasta.'
+
+  },
+
+  {
+
+    name: 'Pollo relleno de espinacas y feta con arroz', calories: 650, category: 'heavy',
+
+    ingredients: ['1 pechuga de pollo entera (abierta en libro)', 'Puñado de espinacas frescas', '30g de queso feta', 'Guarnición de arroz basmati (40g crudo)'],
+
+    instructions: 'Rellena la pechuga con espinacas y el feta desmigado. Cierra con palillos. Dórala bien y baja el fuego. Acompaña con el arroz.'
+
+  },
+
+  {
+
+    name: 'Fajitas de ternera y aguacate', calories: 700, category: 'heavy',
+
+    ingredients: ['2 tortillas de trigo o maíz', '150g de ternera en tiras', 'Pimiento y cebolla', 'Medio aguacate en rodajas'],
+
+    instructions: 'Saltea las tiras de carne y verduras a fuego fuerte con especias mexicanas. Rellena las tortillas, añade el aguacate fresco y enrolla.'
+
+  },
+
+  {
+
+    name: 'Lomo de cerdo con patatas al horno', calories: 680, category: 'heavy',
+
+    ingredients: ['2 filetes gruesos de lomo de cerdo (unos 180g)', '1 patata mediana', 'Romero', 'Ajo'],
+
+    instructions: 'Corta la patata en gajos (con piel), aliña con ajo, romero y al horno 30 min. Haz el lomo a la plancha en el último minuto.'
+
+  },
+
+  {
+
+    name: 'Cuscús con tiras de pollo y garbanzos', calories: 620, category: 'heavy',
+
+    ingredients: ['60g de cuscús (seco)', '100g de pechuga de pollo en tiras', 'Calabacín en dados', '50g de garbanzos', 'Comino'],
+
+    instructions: 'Saltea el pollo y el calabacín. Prepara el cuscús con agua hirviendo. Mezcla todo en un bol con los garbanzos para un plato altísimo en proteína vegetal y animal.'
+
+  },
+
+  {
+
+    name: 'Tataki de atún con ensalada de algas y arroz', calories: 750, category: 'heavy',
+
+    ingredients: ['1 lomo de atún fresco grande (200g)', 'Sésamo tostado', 'Salsa de soja', '1 porción de arroz blanco (60g en seco)'],
+
+    instructions: 'Reboza el lomo de atún en sésamo. Pasa por la sartén muy caliente 15 segundos por lado. Corta en láminas finas y sirve con arroz y soja.'
+
+  },
+
+  {
+
+    name: 'Burrito bowl de pollo, huevo y frijoles', calories: 710, category: 'heavy',
+
+    ingredients: ['50g de arroz', '100g de pollo a la plancha picado', '1 huevo a la plancha', 'Media taza de frijoles negros (bote)', 'Pico de gallo'],
+
+    instructions: 'Sirve en un bol una base de arroz. Por encima acomoda el pollo, los frijoles calientes, corona con el huevo a la plancha y el pico de gallo.'
+
+  },
+
+  {
+
+    name: 'Entrecot a la plancha con verduras', calories: 780, category: 'heavy',
+
+    ingredients: ['1 entrecot de ternera (200g)', 'Espárragos trigueros', 'Pimientos asados', 'Sal en escamas'],
+
+    instructions: 'Atempera la carne. Hazla a la plancha o parrilla a fuego muy fuerte para sellarla y dejarla al punto que te guste. Sirve con las verduras de guarnición.'
+
+  },
+
+  {
+
+    name: 'Salmón al horno con costra de pistachos y puré', calories: 750, category: 'heavy',
+
+    ingredients: ['1 lomo de salmón (150g)', '15g de pistachos picados', '1 cucharada de mostaza', '1 patata cocida para puré'],
+
+    instructions: 'Unta el salmón con mostaza y pégale los pistachos picados por encima. Hornea 12 min. Acompaña con puré de patata casero.'
+
+  },
+
+  {
+
+    name: 'Macarrones integrales con atún, huevo y tomate', calories: 650, category: 'heavy',
+
+    ingredients: ['70g de macarrones integrales (seco)', '2 latas de atún al natural', '1 huevo duro picado', 'Salsa de tomate casera'],
+
+    instructions: 'Cuece la pasta. Añade la salsa de tomate caliente, el atún escurrido y el huevo duro picado. Comida reconfortante y super proteica.'
+
+  },
+
+  {
+
+    name: 'Pechuga de pollo a la parmesana al horno', calories: 600, category: 'heavy',
+
+    ingredients: ['1 pechuga de pollo grande', 'Salsa de tomate natural', '30g de queso mozzarella rallado', 'Orégano'],
+
+    instructions: 'Sella la pechuga a la plancha. Ponla en una bandeja de horno, cúbrela con tomate y la mozzarella. Gratina al horno hasta que funda y dore.'
+
+  },
+
+  {
+
+    name: 'Estofado rápido de pavo con guisantes y patata', calories: 580, category: 'heavy',
+
+    ingredients: ['150g de pavo para guisar en dados', '1 patata troceada', 'Puñado de guisantes congelados', 'Caldo de pollo'],
+
+    instructions: 'Dora el pavo en una olla. Añade la patata chasqueada, los guisantes y cubre con caldo. Cuece a fuego medio unos 20 minutos hasta que espese.'
+
+  },
+
+  {
+
+    name: 'Pizza con base de pechuga de pollo (Meatza)', calories: 680, category: 'heavy',
+
+    ingredients: ['150g de pechuga de pollo triturada (como masa)', 'Tomate triturado', 'Queso rallado magro', 'Pavo en tiras u orégano'],
+
+    instructions: 'Extiende el pollo triturado en papel de horno como si fuera masa de pizza. Hornea 10 min. Saca, pon el tomate, queso y toppings y hornea otros 5 min. ¡Proteína pura!'
+
+  },
+
+  {
+
+    name: 'Medallones de solomillo de cerdo con boniato', calories: 720, category: 'heavy',
+
+    ingredients: ['200g de solomillo de cerdo cortado en medallones gruesos', '1 boniato (batata) asado', 'Pimienta negra en grano'],
+
+    instructions: 'El solomillo de cerdo es la parte más magra. Haz los medallones a la plancha. Acompaña con el boniato asado machacado con un tenedor.'
+
+  },
+
+  {
+
+    name: 'Arroz a la cubana fitness', calories: 640, category: 'heavy',
+
+    ingredients: ['70g de arroz integral (seco)', '2 huevos a la plancha (sin freír en aceite)', 'Salsa de tomate natural triturado', 'Ajo'],
+
+    instructions: 'Cuece el arroz. Dora un ajo picado en la sartén y haz los huevos a la plancha tapándolos. Sirve el arroz con la salsa caliente y los huevos encima.'
+
+  }
+
+];
+
+
+
+const cravingTips = [
+
+  "Bebe un vaso grande de agua fría de golpe. Muchas veces confundimos la sed con el hambre.",
+
+  "La regla de los 15 minutos: Pon una alarma para dentro de 15 min. Si después de ese tiempo sigues queriendo el antojo, replantéatelo. El 90% de las veces, el impulso desaparece.",
+
+  "Lávate los dientes con pasta mentolada. El sabor a menta fuerte corta las ganas de comer dulce o salado.",
+
+  "Haz 10 flexiones o sentadillas ahora mismo. Cambiar el flujo sanguíneo de tu estómago a tus músculos resetea la ansiedad.",
+
+  "Mira tu carpeta de fotos de progreso o esa foto que te motiva. ¿Vale la pena estropear el día por 3 minutos de placer en la boca?",
+
+  "Tómate un café solo, un té verde o una infusión caliente (sin azúcar). El calor en el estómago calma la sensación de vacío.",
+
+  "Pregúntate: ¿Me comería ahora mismo una manzana o una zanahoria cruda? Si la respuesta es NO, no tienes hambre física, es hambre emocional/aburrimiento.",
+
+  "Sal de la habitación donde estás. Cambiar de entorno rompe el bucle mental del antojo."
+
+];
+
+
+
+export default function App() {
+
+  // Cargamos la meta calórica desde la memoria del navegador (por defecto 1800)
+
+  const [calorieGoal, setCalorieGoal] = useState(() => {
+
+    const saved = localStorage.getItem('plan3mad_goal');
+
+    return saved ? Number(saved) : 1800;
+
+  });
+
+  const [isEditingGoal, setIsEditingGoal] = useState(false);
+
+ 
+
+  const todayStr = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  const shortDateStr = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+
+
+
+  const [lastActiveDate, setLastActiveDate] = useState(() => {
+
+    return localStorage.getItem('plan3mad_date') || todayStr;
+
+  });
+
+
+
+  const defaultMeals = {
+
+    desayuno: { name: 'Desayuno', text: '', calories: '', logged: false, icon: Coffee, color: 'text-orange-500', bg: 'bg-orange-100' },
+
+    almuerzo: { name: 'Almuerzo', text: '', calories: '', logged: false, icon: Sun, color: 'text-amber-500', bg: 'bg-amber-100' },
+
+    cena: { name: 'Cena', text: '', calories: '', logged: false, icon: Moon, color: 'text-indigo-500', bg: 'bg-indigo-100' }
+
+  };
+
+
+
+  const [meals, setMeals] = useState(() => {
+
+    const savedMeals = localStorage.getItem('plan3mad_meals');
+
+    const savedDate = localStorage.getItem('plan3mad_date');
+
+   
+
+    // Solo cargamos las comidas si coinciden con el día actual
+
+    if (savedMeals && savedDate === todayStr) {
+
+      // Re-asociamos los iconos (porque en JSON no se guardan directamente)
+
+      const parsed = JSON.parse(savedMeals);
+
+      return {
+
+        desayuno: { ...parsed.desayuno, icon: Coffee },
+
+        almuerzo: { ...parsed.almuerzo, icon: Sun },
+
+        cena: { ...parsed.cena, icon: Moon }
+
+      };
+
+    }
+
+    return defaultMeals;
+
+  });
+
+
+
+  const [chartView, setChartView] = useState('week'); // 'week', 'month', 'total'
+
+ 
+
+  // ¡Se acabaron los datos falsos! Empezamos con un historial real y limpio guardado en el navegador
+
+  const [history, setHistory] = useState(() => {
+
+    const saved = localStorage.getItem('plan3mad_history');
+
+    return saved ? JSON.parse(saved) : [];
+
+  });
+
+ 
+
+  // Guardar automáticamente en el navegador cuando cambie la meta
+
+  useEffect(() => {
+
+    localStorage.setItem('plan3mad_goal', calorieGoal);
+
+  }, [calorieGoal]);
+
+
+
+  // Guardar automáticamente las comidas y la fecha actual en el navegador
+
+  useEffect(() => {
+
+    // Almacenamos una copia limpia sin los iconos para evitar errores en JSON
+
+    const mealsToSave = {
+
+      desayuno: { ...meals.desayuno, icon: null },
+
+      almuerzo: { ...meals.almuerzo, icon: null },
+
+      cena: { ...meals.cena, icon: null }
+
+    };
+
+    localStorage.setItem('plan3mad_meals', JSON.stringify(mealsToSave));
+
+    localStorage.setItem('plan3mad_date', lastActiveDate);
+
+  }, [meals, lastActiveDate]);
+
+
+
+  // Comprobar cambio de día automáticamente
+
+  useEffect(() => {
+
+    const checkNewDay = () => {
+
+      const currentStr = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      if (lastActiveDate !== currentStr) {
+
+        setMeals(defaultMeals);
+
+        setLastActiveDate(currentStr);
+
+        setIsDaySaved(false);
+
+      }
+
+    };
+
+    checkNewDay();
+
+    // Revisa si hemos cambiado de día cada minuto por si dejas la pestaña abierta
+
+    const interval = setInterval(checkNewDay, 60000);
+
+    return () => clearInterval(interval);
+
+  }, [lastActiveDate]);
+
+
+
+  // Guardar automáticamente en el navegador cuando añadas un nuevo día finalizado
+
+  useEffect(() => {
+
+    localStorage.setItem('plan3mad_history', JSON.stringify(history));
+
+  }, [history]);
+
+ 
+
+  // Suggestion States
+
+  const [suggestedDinners, setSuggestedDinners] = useState([]);
+
+  const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
+
+ 
+
+  // Modal States
+
+  const [showCravingModal, setShowCravingModal] = useState(false);
+
+  const [currentCravingTip, setCurrentCravingTip] = useState('');
+
+ 
+
+  const [showRecipeModal, setShowRecipeModal] = useState(false);
+
+  const [activeRecipe, setActiveRecipe] = useState(null);
+
+
+
+  // Totals
+
+  const totalCalories = Object.values(meals).reduce((sum, meal) => {
+
+    return sum + (meal.logged ? Number(meal.calories) || 0 : 0);
+
+  }, 0);
+
+ 
+
+  const remainingCalories = calorieGoal - totalCalories;
+
+  const progressPercentage = Math.min((totalCalories / calorieGoal) * 100, 100);
+
+  const isOverBudget = totalCalories > calorieGoal;
+
+
+
+  const isTimeForDinnerSuggestions = meals.desayuno.logged && meals.almuerzo.logged && !meals.cena.logged && remainingCalories > 0;
+
+
+
+  // Initialize Suggestions
+
+  useEffect(() => {
+
+    if (isTimeForDinnerSuggestions) {
+
+      // Filtrar opciones que no superen el presupuesto calórico (margen +50kcal)
+
+      let validOptions = dinnerSuggestions.filter(meal => meal.calories <= remainingCalories + 50);
+
+     
+
+      // Si no quedan calorías casi, forzar las opciones "light"
+
+      if (validOptions.length === 0) {
+
+        validOptions = dinnerSuggestions.filter(meal => meal.category === 'light');
+
+      }
+
+
+
+      // Mezclar aleatoriamente el array para que no salgan siempre las mismas
+
+      const shuffled = [...validOptions].sort(() => 0.5 - Math.random());
+
+     
+
+      setSuggestedDinners(shuffled);
+
+      setCurrentSuggestionIndex(0);
+
+    } else {
+
+      setSuggestedDinners([]);
+
+    }
+
+  }, [meals.desayuno.logged, meals.almuerzo.logged, meals.cena.logged, remainingCalories]);
+
+
+
+  const handleMealChange = (mealKey, field, value) => {
+
+    setMeals(prev => ({
+
+      ...prev,
+
+      [mealKey]: {
+
+        ...prev[mealKey],
+
+        [field]: value
+
+      }
+
+    }));
+
+  };
+
+
+
+  const toggleMealLog = (mealKey) => {
+
+    setMeals(prev => ({
+
+      ...prev,
+
+      [mealKey]: {
+
+        ...prev[mealKey],
+
+        logged: !prev[mealKey].logged
+
+      }
+
+    }));
+
+  };
+
+
+
+  const [isDaySaved, setIsDaySaved] = useState(false);
+
+  const fileInputRef = useRef(null);
+
+
+
+  const finishDay = () => {
+
+    setHistory(prev => {
+
+      // Buscamos si ya existe una entrada para hoy en la gráfica
+
+      const existingIndex = prev.findIndex(item => item.date === shortDateStr);
+
+     
+
+      if (existingIndex >= 0) {
+
+        // Actualizamos el día de hoy si ya existe (por si cambiaste un alimento)
+
+        const newHistory = [...prev];
+
+        newHistory[existingIndex] = { date: shortDateStr, calorias: totalCalories, meta: calorieGoal };
+
+        return newHistory;
+
+      } else {
+
+        // Añadimos un nuevo día
+
+        return [...prev, { date: shortDateStr, calorias: totalCalories, meta: calorieGoal }];
+
+      }
+
+    });
+
+   
+
+    // Ya NO limpiamos los campos aquí. Mostramos feedback visual.
+
+    setIsDaySaved(true);
+
+    setTimeout(() => setIsDaySaved(false), 3000);
+
+  };
+
+
+
+  const exportBackup = () => {
+
+    const dataToExport = {
+
+      goal: calorieGoal,
+
+      history: history,
+
+      meals: {
+
+        desayuno: { ...meals.desayuno, icon: null },
+
+        almuerzo: { ...meals.almuerzo, icon: null },
+
+        cena: { ...meals.cena, icon: null }
+
+      },
+
+      date: lastActiveDate
+
+    };
+
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+
+    a.href = url;
+
+    a.download = `plan3mad_backup_${new Date().toISOString().split('T')[0]}.json`;
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+  };
+
+
+
+  const importBackup = (event) => {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+
+      try {
+
+        const data = JSON.parse(e.target.result);
+
+        if (data.goal) setCalorieGoal(data.goal);
+
+        if (data.history) setHistory(data.history);
+
+        if (data.date) setLastActiveDate(data.date);
+
+        if (data.meals) {
+
+          setMeals({
+
+            desayuno: { ...data.meals.desayuno, icon: Coffee },
+
+            almuerzo: { ...data.meals.almuerzo, icon: Sun },
+
+            cena: { ...data.meals.cena, icon: Moon }
+
+          });
+
+        }
+
+        alert("¡Copia de seguridad restaurada con éxito!");
+
+      } catch (err) {
+
+        alert("Error al leer el archivo. Asegúrate de que es un backup válido.");
+
+      }
+
+      event.target.value = ''; // Limpiamos el input
+
+    };
+
+    reader.readAsText(file);
+
+  };
+
+
+
+  const getFilteredHistory = () => {
+
+    if (chartView === 'week') return history.slice(-7);
+
+    if (chartView === 'month') return history.slice(-30);
+
+    return history;
+
+  };
+
+  const chartData = getFilteredHistory();
+
+
+
+  // Actions
+
+  const triggerCravingSOS = () => {
+
+    const randomTip = cravingTips[Math.floor(Math.random() * cravingTips.length)];
+
+    setCurrentCravingTip(randomTip);
+
+    setShowCravingModal(true);
+
+  };
+
+
+
+  const handleNextSuggestion = () => {
+
+    if (suggestedDinners.length > 0) {
+
+      setCurrentSuggestionIndex((prev) => (prev + 1) % suggestedDinners.length);
+
+    }
+
+  };
+
+
+
+  const viewRecipe = (recipe) => {
+
+    setActiveRecipe(recipe);
+
+    setShowRecipeModal(true);
+
+  };
+
+
+
+  const confirmAndAddRecipe = () => {
+
+    if (activeRecipe) {
+
+      handleMealChange('cena', 'text', activeRecipe.name);
+
+      handleMealChange('cena', 'calories', activeRecipe.calories);
+
+     
+
+      // Auto-guardar la cena
+
+      setMeals(prev => ({
+
+        ...prev,
+
+        cena: {
+
+          ...prev.cena,
+
+          text: activeRecipe.name,
+
+          calories: activeRecipe.calories,
+
+          logged: true
+
+        }
+
+      }));
+
+     
+
+      setShowRecipeModal(false);
+
+    }
+
+  };
+
+
+
+  const currentSuggestion = suggestedDinners[currentSuggestionIndex];
+
+
+
+  return (
+
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-10 relative">
+
+     
+
+      {/* Craving SOS Button - Floating */}
+
+      <button
+
+        onClick={triggerCravingSOS}
+
+        className="fixed bottom-6 right-6 z-40 bg-rose-500 text-white p-4 rounded-full shadow-lg shadow-rose-200 hover:bg-rose-600 hover:scale-105 active:scale-95 transition-all flex items-center justify-center animate-pulse"
+
+        title="¡Botón S.O.S. Antojos!"
+
+      >
+
+        <ShieldAlert size={28} />
+
+      </button>
+
+
+
+      {/* Header & Motivation */}
+
+      <div className="bg-emerald-600 text-white pt-12 pb-6 px-6 rounded-b-3xl shadow-lg relative overflow-hidden">
+
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+
+          <Target size={120} />
+
+        </div>
+
+        <div className="relative z-10 max-w-md mx-auto">
+
+          <div className="flex justify-between items-start mb-1">
+
+             <h1 className="text-2xl font-bold tracking-tight">Plan 3MAD</h1>
+
+          </div>
+
+          <p className="text-emerald-100 text-sm mb-6">Disciplina, simplicidad y déficit.</p>
+
+         
+
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30 flex items-start space-x-3">
+
+            <Heart className="text-emerald-200 mt-1 flex-shrink-0" size={20} />
+
+            <div>
+
+              <p className="font-medium text-sm">¡Vamos Mariano, tú puedes!</p>
+
+              <p className="text-xs text-emerald-100 mt-1 leading-snug">
+
+                Cero excusas hoy. Mantente firme en tus 3 comidas. Si sientes ansiedad usa el botón SOS.
+
+              </p>
+
+              <a
+
+                href="https://drive.google.com/drive/folders/1wzkDMJnr8cfq36HvbRfRizRLzXdJWDWq"
+
+                target="_blank"
+
+                rel="noopener noreferrer"
+
+                className="inline-flex items-center mt-3 text-xs bg-emerald-500/80 hover:bg-emerald-500 transition-colors px-3 py-1.5 rounded-lg text-white font-medium shadow-sm"
+
+              >
+
+                📸 Ver mi carpeta de motivación
+
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <div className="max-w-md mx-auto px-4 -mt-4 relative z-20 space-y-4">
+
+       
+
+        {/* Calorie Tracker Widget */}
+
+        <div className="bg-white rounded-2xl shadow-sm p-5 border border-slate-100">
+
+          <div className="flex justify-between items-center mb-4">
+
+            <h2 className="font-bold flex items-center text-slate-700">
+
+              <Flame size={18} className="mr-2 text-rose-500" />
+
+              Balance Diario
+
+            </h2>
+
+            {isEditingGoal ? (
+
+              <div className="flex items-center space-x-2">
+
+                <input
+
+                  type="number"
+
+                  value={calorieGoal}
+
+                  onChange={(e) => setCalorieGoal(Number(e.target.value))}
+
+                  className="w-20 px-2 py-1 border rounded text-sm text-center"
+
+                  inputMode="numeric"
+
+                />
+
+                <button
+
+                  onClick={() => setIsEditingGoal(false)}
+
+                  className="text-emerald-600 text-sm font-semibold"
+
+                >
+
+                  Ok
+
+                </button>
+
+              </div>
+
+            ) : (
+
+              <button
+
+                onClick={() => setIsEditingGoal(true)}
+
+                className="text-slate-400 text-sm flex items-center hover:text-slate-600"
+
+              >
+
+                Meta: {calorieGoal} <Edit3 size={12} className="ml-1" />
+
+              </button>
+
+            )}
+
+          </div>
+
+
+
+          {/* Progress Bar */}
+
+          <div className="relative h-4 bg-slate-100 rounded-full overflow-hidden mb-2">
+
+            <div
+
+              className={`absolute top-0 left-0 h-full rounded-full transition-all duration-500 ${isOverBudget ? 'bg-rose-500' : 'bg-emerald-500'}`}
+
+              style={{ width: `${progressPercentage}%` }}
+
+            ></div>
+
+          </div>
+
+         
+
+          <div className="flex justify-between text-sm">
+
+            <div className="text-slate-500">
+
+              Consumidas: <span className="font-bold text-slate-700">{totalCalories}</span>
+
+            </div>
+
+            <div className={isOverBudget ? 'text-rose-500 font-bold' : 'text-emerald-600 font-bold'}>
+
+              {isOverBudget ? `+${Math.abs(remainingCalories)} extra` : `${remainingCalories} kcal restantes`}
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        {/* --- DINNER SUGGESTIONS CAROUSEL --- */}
+
+        {isTimeForDinnerSuggestions && currentSuggestion && (
+
+          <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 shadow-sm animate-in fade-in slide-in-from-bottom-4">
+
+            <div className="flex justify-between items-start mb-3">
+
+              <h3 className="font-bold text-indigo-800 flex items-center text-sm">
+
+                <Lightbulb size={16} className="mr-2 text-indigo-500" />
+
+                Sugerencia para cenar:
+
+              </h3>
+
+              <span className="text-xs font-bold text-white bg-indigo-500 px-2 py-1 rounded-md">
+
+                ~{currentSuggestion.calories} kcal
+
+              </span>
+
+            </div>
+
+           
+
+            <div className="bg-white rounded-xl p-4 border border-indigo-100 mb-4 shadow-sm">
+
+              <p className="text-slate-700 font-medium text-lg leading-tight">
+
+                {currentSuggestion.name}
+
+              </p>
+
+            </div>
+
+
+
+            <div className="flex space-x-3">
+
+              <button
+
+                onClick={handleNextSuggestion}
+
+                className="flex-1 bg-white border border-indigo-200 text-indigo-600 font-semibold py-2.5 rounded-xl hover:bg-indigo-100 transition-colors text-sm flex items-center justify-center"
+
+              >
+
+                Siguiente
+
+                <ArrowRight size={16} className="ml-1" />
+
+              </button>
+
+              <button
+
+                onClick={() => viewRecipe(currentSuggestion)}
+
+                className="flex-1 bg-indigo-600 text-white font-semibold py-2.5 rounded-xl shadow-sm hover:bg-indigo-700 transition-colors text-sm flex items-center justify-center"
+
+              >
+
+                ¡Me gusta! Ver receta
+
+              </button>
+
+            </div>
+
+            <p className="text-[10px] text-indigo-400 mt-3 text-center uppercase tracking-widest font-semibold">
+
+              Opción {currentSuggestionIndex + 1} de {suggestedDinners.length}
+
+            </p>
+
+          </div>
+
+        )}
+
+
+
+        {/* --- MEALS SECTION --- */}
+
+        <div className="space-y-3">
+
+          <h3 className="font-bold text-slate-700 px-2 pt-2 text-sm uppercase tracking-wider">Tus 3 Comidas</h3>
+
+         
+
+          {Object.entries(meals).map(([key, meal]) => (
+
+            <div key={key} className={`bg-white rounded-2xl shadow-sm border overflow-hidden transition-all duration-300 ${meal.logged ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-100'}`}>
+
+             
+
+              <div className="p-4 flex items-center justify-between cursor-pointer" onClick={() => meal.logged && toggleMealLog(key)}>
+
+                <div className="flex items-center space-x-3">
+
+                  <div className={`p-2 rounded-xl ${meal.bg} ${meal.color}`}>
+
+                    <meal.icon size={20} />
+
+                  </div>
+
+                  <div>
+
+                    <h3 className={`font-bold ${meal.logged ? 'text-slate-800' : 'text-slate-600'}`}>{meal.name}</h3>
+
+                    {meal.logged && (
+
+                      <p className="text-xs text-slate-500 truncate max-w-[150px]">{meal.text || 'Sin descripción'}</p>
+
+                    )}
+
+                  </div>
+
+                </div>
+
+               
+
+                {meal.logged ? (
+
+                  <div className="flex items-center space-x-3">
+
+                    <span className="font-bold text-slate-700">{meal.calories} kcal</span>
+
+                    <CheckCircle2 className="text-emerald-500" size={24} />
+
+                  </div>
+
+                ) : (
+
+                  <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">Pendiente</span>
+
+                )}
+
+              </div>
+
+
+
+              {/* Input Form (visible when not logged) */}
+
+              {!meal.logged && (
+
+                <div className="px-4 pb-4 pt-1 animate-in slide-in-from-top-2">
+
+                  <div className="space-y-3">
+
+                    <input
+
+                      type="text"
+
+                      placeholder={`¿Qué vas a comer en el ${meal.name.toLowerCase()}?`}
+
+                      value={meal.text}
+
+                      onChange={(e) => handleMealChange(key, 'text', e.target.value)}
+
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+
+                    />
+
+                    <div className="flex space-x-2">
+
+                      <div className="relative flex-1">
+
+                        <input
+
+                          type="number"
+
+                          inputMode="numeric"
+
+                          placeholder="Calorías (ej. 500)"
+
+                          value={meal.calories}
+
+                          onChange={(e) => handleMealChange(key, 'calories', e.target.value)}
+
+                          className="w-full px-3 py-2 pl-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+
+                        />
+
+                      </div>
+
+                      <button
+
+                        onClick={() => toggleMealLog(key)}
+
+                        disabled={!meal.calories}
+
+                        className="bg-emerald-600 disabled:bg-emerald-300 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition-colors"
+
+                      >
+
+                        Guardar
+
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              )}
+
+            </div>
+
+          ))}
+
+        </div>
+
+
+
+        {/* --- GRÁFICA DE CALORÍAS --- */}
+
+        <div className="pt-4">
+
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+
+            <h3 className="font-bold text-slate-700 mb-4 flex items-center">
+
+              <Target size={18} className="mr-2 text-indigo-500" />
+
+              Tu Progreso
+
+            </h3>
+
+           
+
+            <div className="flex bg-slate-50 p-1 rounded-xl mb-6 border border-slate-100">
+
+              <button
+
+                onClick={() => setChartView('week')}
+
+                className={`flex-1 text-xs font-semibold py-2 rounded-lg transition-all duration-200 ${chartView === 'week' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+
+              >
+
+                1 Semana
+
+              </button>
+
+              <button
+
+                onClick={() => setChartView('month')}
+
+                className={`flex-1 text-xs font-semibold py-2 rounded-lg transition-all duration-200 ${chartView === 'month' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+
+              >
+
+                1 Mes
+
+              </button>
+
+              <button
+
+                onClick={() => setChartView('total')}
+
+                className={`flex-1 text-xs font-semibold py-2 rounded-lg transition-all duration-200 ${chartView === 'total' ? 'bg-white text-indigo-600 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+
+              >
+
+                Total
+
+              </button>
+
+            </div>
+
+
+
+            <div className="h-52 w-full">
+
+              <ResponsiveContainer width="100%" height="100%">
+
+                <LineChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+
+                  <XAxis
+
+                    dataKey="date"
+
+                    tick={{fontSize: 10, fill: '#94a3b8'}}
+
+                    tickLine={false}
+
+                    axisLine={false}
+
+                    minTickGap={15}
+
+                  />
+
+                  <YAxis
+
+                    tick={{fontSize: 10, fill: '#94a3b8'}}
+
+                    tickLine={false}
+
+                    axisLine={false}
+
+                  />
+
+                  <Tooltip
+
+                    contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+
+                    labelStyle={{ color: '#64748b', fontWeight: 'bold', fontSize: '12px', marginBottom: '4px' }}
+
+                  />
+
+                  <ReferenceLine
+
+                    y={calorieGoal}
+
+                    stroke="#10b981"
+
+                    strokeDasharray="4 4"
+
+                    label={{ position: 'insideTopLeft', value: 'Meta', fill: '#10b981', fontSize: 10, fontWeight: 'bold' }}
+
+                  />
+
+                  <Line
+
+                    type="monotone"
+
+                    dataKey="calorias"
+
+                    name="Calorías"
+
+                    stroke="#6366f1"
+
+                    strokeWidth={3}
+
+                    dot={{r: 4, fill: '#ffffff', stroke: '#6366f1', strokeWidth: 2}}
+
+                    activeDot={{r: 6, fill: '#6366f1', stroke: '#ffffff', strokeWidth: 2}}
+
+                  />
+
+                </LineChart>
+
+              </ResponsiveContainer>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        {/* Reset / Finish Button */}
+
+        <div className="pt-4 flex justify-center">
+
+          <button
+
+            onClick={finishDay}
+
+            className={`text-sm font-semibold px-6 py-2.5 rounded-full transition-colors flex items-center shadow-sm ${isDaySaved ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
+
+          >
+
+            {isDaySaved ? (
+
+              <>
+
+                <CheckCircle2 size={16} className="mr-2" />
+
+                ¡Día Guardado en la Gráfica!
+
+              </>
+
+            ) : (
+
+              <>
+
+                <Save size={16} className="mr-2" />
+
+                Finalizar y Guardar Día
+
+              </>
+
+            )}
+
+          </button>
+
+        </div>
+
+
+
+        {/* --- BACKUP SECTION --- */}
+
+        <div className="pt-8 pb-12">
+
+          <div className="flex items-center justify-center space-x-4 border-t border-slate-200 pt-6">
+
+            <button
+
+              onClick={exportBackup}
+
+              className="flex items-center text-xs text-slate-500 hover:text-indigo-600 transition-colors font-medium bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm"
+
+            >
+
+              <Download size={14} className="mr-2" />
+
+              Guardar Backup
+
+            </button>
+
+           
+
+            <input
+
+              type="file"
+
+              accept=".json"
+
+              ref={fileInputRef}
+
+              onChange={importBackup}
+
+              className="hidden"
+
+            />
+
+            <button
+
+              onClick={() => fileInputRef.current.click()}
+
+              className="flex items-center text-xs text-slate-500 hover:text-indigo-600 transition-colors font-medium bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm"
+
+            >
+
+              <Upload size={14} className="mr-2" />
+
+              Cargar Backup
+
+            </button>
+
+          </div>
+
+          <p className="text-center text-[10px] text-slate-400 mt-2 px-6">
+
+            Descarga tus datos periódicamente en formato .json. Así, si alguna vez borras el historial del navegador, podrás recuperarlo todo con el botón "Cargar".
+
+          </p>
+
+        </div>
+
+
+
+      </div>
+
+
+
+      {/* --- CRAVING S.O.S. MODAL --- */}
+
+      {showCravingModal && (
+
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+
+          <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+
+            <div className="bg-rose-500 p-6 flex flex-col items-center justify-center text-white relative">
+
+              <button
+
+                onClick={() => setShowCravingModal(false)}
+
+                className="absolute top-4 right-4 text-rose-200 hover:text-white transition-colors"
+
+              >
+
+                <X size={24} />
+
+              </button>
+
+              <ShieldAlert size={48} className="mb-3 text-rose-100" />
+
+              <h2 className="text-2xl font-bold mb-1">¡Alerta de Antojo!</h2>
+
+              <p className="text-rose-100 text-sm text-center">No estás solo en esto. Sigue este consejo ahora mismo:</p>
+
+            </div>
+
+           
+
+            <div className="p-8">
+
+              <p className="text-slate-700 text-lg font-medium text-center leading-relaxed">
+
+                "{currentCravingTip}"
+
+              </p>
+
+             
+
+              <div className="mt-8 space-y-3">
+
+                <button
+
+                  onClick={() => setShowCravingModal(false)}
+
+                  className="w-full bg-rose-100 text-rose-700 hover:bg-rose-200 font-bold py-3 rounded-xl transition-colors"
+
+                >
+
+                  ¡Entendido! Voy a hacerlo.
+
+                </button>
+
+                <button
+
+                  onClick={triggerCravingSOS}
+
+                  className="w-full bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 font-medium py-3 rounded-xl transition-colors"
+
+                >
+
+                  Dame otro consejo
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+
+
+      {/* --- RECIPE DETAILS MODAL --- */}
+
+      {showRecipeModal && activeRecipe && (
+
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+
+          <div className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-full sm:zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+
+           
+
+            <div className="bg-indigo-600 p-5 flex flex-col relative text-white">
+
+              <button
+
+                onClick={() => setShowRecipeModal(false)}
+
+                className="absolute top-4 right-4 text-indigo-200 hover:text-white transition-colors p-1"
+
+              >
+
+                <X size={24} />
+
+              </button>
+
+              <div className="pr-8">
+
+                <h2 className="text-xl font-bold mb-1 leading-tight">{activeRecipe.name}</h2>
+
+                <span className="inline-block bg-indigo-500 text-indigo-50 text-xs font-bold px-2.5 py-1 rounded-md">
+
+                  ~{activeRecipe.calories} kcal
+
+                </span>
+
+              </div>
+
+            </div>
+
+           
+
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+
+             
+
+              {/* Ingredients */}
+
+              <div className="mb-6">
+
+                <h3 className="text-slate-800 font-bold mb-3 flex items-center">
+
+                  <Utensils size={18} className="mr-2 text-indigo-500" />
+
+                  Ingredientes
+
+                </h3>
+
+                <ul className="space-y-2">
+
+                  {activeRecipe.ingredients.map((ing, idx) => (
+
+                    <li key={idx} className="flex items-start text-sm text-slate-600">
+
+                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 mr-2 flex-shrink-0"></div>
+
+                      {ing}
+
+                    </li>
+
+                  ))}
+
+                </ul>
+
+              </div>
+
+
+
+              {/* Instructions */}
+
+              <div>
+
+                <h3 className="text-slate-800 font-bold mb-3 flex items-center">
+
+                  <ChefHat size={18} className="mr-2 text-indigo-500" />
+
+                  Preparación
+
+                </h3>
+
+                <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100">
+
+                  {activeRecipe.instructions}
+
+                </p>
+
+              </div>
+
+
+
+            </div>
+
+
+
+            {/* Action Button */}
+
+            <div className="p-4 border-t border-slate-100 bg-white">
+
+              <button
+
+                onClick={confirmAndAddRecipe}
+
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-200 transition-all active:scale-[0.98] text-lg"
+
+              >
+
+                ¡Cocinar esto! (Añadir a cena)
+
+              </button>
+
+            </div>
+
+           
+
+          </div>
+
+        </div>
+
+      )}
+
+
+
+      {/* Add some basic custom scrollbar styling for modals */}
+
+      <style dangerouslySetInnerHTML={{__html: `
+
+        .custom-scrollbar::-webkit-scrollbar {
+
+          width: 6px;
+
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+
+          background: transparent;
+
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+
+          background: #e2e8f0;
+
+          border-radius: 10px;
+
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+
+          background: #cbd5e1;
+
+        }
+
+      `}} />
+
+    </div>
+
+  );
+
+} 
+

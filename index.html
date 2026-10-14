@@ -74,7 +74,7 @@
   <div id="modal-list" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-950 border border-zinc-900 rounded-3xl w-full max-w-sm p-6 shadow-2xl">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-lg font-bold text-white">Programa del Día</h2>
+        <h2 class="text-lg font-bold text-white">Programa de Comidas</h2>
         <button id="close-list" class="p-2 text-zinc-400 hover:text-white">✕</button>
       </div>
       <div id="program-list" class="space-y-3 mb-6"></div>
@@ -84,13 +84,25 @@
 
   <!-- SCRIPT LÓGICA VANILLA JS -->
   <script>
+    const ALL_DAYS = [1, 2, 3, 4, 5, 6, 0]; // 1=Lunes ... 0=Domingo
+    const DAYS_MAP = [
+      { d: 1, l: 'L' }, { d: 2, l: 'M' }, { d: 3, l: 'X' },
+      { d: 4, l: 'J' }, { d: 5, l: 'V' }, { d: 6, l: 'S' }, { d: 0, l: 'D' }
+    ];
+
     const defaultMeals = [
-      { id: '1', name: 'Desayuno', start: '09:00', end: '09:45' },
-      { id: '2', name: 'Almuerzo', start: '14:00', end: '15:00' },
-      { id: '3', name: 'Cena', start: '20:00', end: '21:00' }
+      { id: '1', name: 'Desayuno', start: '09:00', end: '09:45', days: [...ALL_DAYS] },
+      { id: '2', name: 'Almuerzo', start: '14:00', end: '15:00', days: [...ALL_DAYS] },
+      { id: '3', name: 'Cena', start: '20:00', end: '21:00', days: [...ALL_DAYS] }
     ];
 
     let meals = JSON.parse(localStorage.getItem('plan3mad_meal_slots')) || defaultMeals;
+
+    // Asegurar que cada comida tiene la propiedad 'days'
+    meals = meals.map(m => ({
+      ...m,
+      days: Array.isArray(m.days) && m.days.length > 0 ? m.days : [...ALL_DAYS]
+    }));
 
     const redBulb = document.getElementById('red-bulb');
     const greenBulb = document.getElementById('green-bulb');
@@ -110,6 +122,10 @@
       localStorage.setItem('plan3mad_meal_slots', JSON.stringify(meals));
     }
 
+    function getMealDays(meal) {
+      return Array.isArray(meal.days) && meal.days.length > 0 ? meal.days : ALL_DAYS;
+    }
+
     function formatSeconds(totalSecs) {
       if (totalSecs < 0) return '00:00:00';
       const h = Math.floor(totalSecs / 3600);
@@ -120,6 +136,7 @@
 
     function updateApp() {
       const now = new Date();
+      const currentDay = now.getDay(); // 0 = Domingo, 1 = Lunes...
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       const currentSeconds = now.getSeconds();
 
@@ -127,19 +144,29 @@
       let minMinutesToNext = Infinity;
 
       meals.forEach(meal => {
+        const mealDays = getMealDays(meal);
         const [sH, sM] = meal.start.split(':').map(Number);
         const [eH, eM] = meal.end.split(':').map(Number);
         const startMins = sH * 60 + sM;
         const endMins = eH * 60 + eM;
 
-        if (currentMinutes >= startMins && currentMinutes < endMins) {
+        // ¿Está activa ahora mismo?
+        if (mealDays.includes(currentDay) && currentMinutes >= startMins && currentMinutes < endMins) {
           activeMeal = { ...meal, endMins };
         }
 
-        let diff = startMins - currentMinutes;
-        if (diff <= 0) diff += 1440;
-        if (diff < minMinutesToNext) {
-          minMinutesToNext = diff;
+        // Buscar próximo evento en los próximos 7 días
+        for (let offset = 0; offset < 7; offset++) {
+          const checkDay = (currentDay + offset) % 7;
+          if (mealDays.includes(checkDay)) {
+            let diff = (offset * 1440) + startMins - currentMinutes;
+            if (diff > 0) {
+              if (diff < minMinutesToNext) {
+                minMinutesToNext = diff;
+              }
+              break; // Encontrada la más cercana para esta comida
+            }
+          }
         }
       });
 
@@ -155,7 +182,7 @@
         redBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_90px_rgba(244,63,94,0.9)] scale-105';
         greenBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-950/20 opacity-20 border border-emerald-900/20';
 
-        const totalSecs = minMinutesToNext * 60 - currentSeconds;
+        const totalSecs = (minMinutesToNext === Infinity ? 0 : minMinutesToNext * 60) - currentSeconds;
         timerDisplay.textContent = formatSeconds(totalSecs);
       }
     }
@@ -163,6 +190,24 @@
     function renderSettings() {
       mealsContainer.innerHTML = '';
       meals.forEach((meal, index) => {
+        const mDays = getMealDays(meal);
+
+        const daysButtonsHtml = DAYS_MAP.map(dayObj => {
+          const isActive = mDays.includes(dayObj.d);
+          const bgClass = isActive 
+            ? 'bg-emerald-600 text-white font-bold border-emerald-500' 
+            : 'bg-black text-zinc-600 border-zinc-800 hover:text-zinc-400';
+          return `
+            <button 
+              type="button" 
+              data-meal-index="${index}" 
+              data-day="${dayObj.d}" 
+              class="btn-day-toggle w-8 h-8 text-xs rounded-xl border transition-all ${bgClass}">
+              ${dayObj.l}
+            </button>
+          `;
+        }).join('');
+
         const item = document.createElement('div');
         item.className = 'bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800 space-y-3';
         item.innerHTML = `
@@ -170,6 +215,7 @@
             <input type="text" value="${meal.name}" data-index="${index}" class="meal-name-input bg-transparent font-semibold text-white focus:outline-none border-b border-transparent focus:border-emerald-500" />
             ${meals.length > 1 ? `<button data-index="${index}" class="btn-delete-meal text-rose-400 text-xs font-bold hover:text-rose-300">Eliminar</button>` : ''}
           </div>
+          
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
               <label class="text-zinc-400 text-xs block mb-1">Inicio</label>
@@ -178,6 +224,13 @@
             <div>
               <label class="text-zinc-400 text-xs block mb-1">Fin</label>
               <input type="time" value="${meal.end}" data-index="${index}" class="meal-end-input w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono" />
+            </div>
+          </div>
+
+          <div>
+            <label class="text-zinc-400 text-xs block mb-1.5">Días aplicables</label>
+            <div class="flex justify-between items-center">
+              ${daysButtonsHtml}
             </div>
           </div>
         `;
@@ -193,6 +246,26 @@
       document.querySelectorAll('.meal-end-input').forEach(input => {
         input.onchange = (e) => meals[e.target.dataset.index].end = e.target.value;
       });
+
+      document.querySelectorAll('.btn-day-toggle').forEach(btn => {
+        btn.onclick = (e) => {
+          const mealIdx = parseInt(btn.dataset.mealIndex);
+          const dayNum = parseInt(btn.dataset.day);
+          let mDays = [...getMealDays(meals[mealIdx])];
+
+          if (mDays.includes(dayNum)) {
+            if (mDays.length > 1) { // Evitar dejar sin ningún día
+              mDays = mDays.filter(d => d !== dayNum);
+            }
+          } else {
+            mDays.push(dayNum);
+          }
+
+          meals[mealIdx].days = mDays;
+          renderSettings();
+        };
+      });
+
       document.querySelectorAll('.btn-delete-meal').forEach(btn => {
         btn.onclick = (e) => {
           meals.splice(e.target.dataset.index, 1);
@@ -204,11 +277,22 @@
     function renderProgram() {
       programList.innerHTML = '';
       meals.forEach(m => {
+        const mDays = getMealDays(m);
+        const daysChips = DAYS_MAP.map(dObj => {
+          const active = mDays.includes(dObj.d);
+          return `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${active ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'text-zinc-700'}">${dObj.l}</span>`;
+        }).join(' ');
+
         const item = document.createElement('div');
-        item.className = 'flex justify-between items-center p-3 bg-zinc-900/80 rounded-xl border border-zinc-800';
+        item.className = 'p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 space-y-2';
         item.innerHTML = `
-          <span class="font-medium text-zinc-200">${m.name}</span>
-          <span class="font-mono text-xs text-emerald-400 font-bold">${m.start} - ${m.end}</span>
+          <div class="flex justify-between items-center">
+            <span class="font-medium text-zinc-200">${m.name}</span>
+            <span class="font-mono text-xs text-emerald-400 font-bold">${m.start} - ${m.end}</span>
+          </div>
+          <div class="flex space-x-1 pt-1 border-t border-zinc-800/60">
+            ${daysChips}
+          </div>
         `;
         programList.appendChild(item);
       });
@@ -227,7 +311,7 @@
     };
 
     document.getElementById('btn-add-meal').onclick = () => {
-      meals.push({ id: Date.now().toString(), name: 'Nueva Comida', start: '12:00', end: '13:00' });
+      meals.push({ id: Date.now().toString(), name: 'Nueva Comida', start: '12:00', end: '13:00', days: [...ALL_DAYS] });
       renderSettings();
     };
 

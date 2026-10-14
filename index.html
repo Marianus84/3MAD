@@ -9,201 +9,248 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-gray-950 text-white font-sans antialiased overflow-hidden select-none">
-  <div id="root"></div>
+<body class="bg-gray-950 text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col justify-between items-center p-6 transition-colors duration-1000" id="main-bg">
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
-
-    const SettingsIcon = () => (
-      <svg className="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+  <!-- BARRA SUPERIOR DE BOTONES -->
+  <div class="w-full max-w-sm flex justify-between items-center z-10">
+    <button id="btn-settings" class="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
+      <svg class="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
-    );
-
-    const MaximizeIcon = () => (
-      <svg className="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+    </button>
+    <button id="btn-list" class="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
+      <svg class="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
       </svg>
-    );
-
-    const ListIcon = () => (
-      <svg className="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+    </button>
+    <button id="btn-fullscreen" class="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
+      <svg class="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
       </svg>
-    );
+    </button>
+  </div>
 
-    const XIcon = () => (
-      <svg className="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    );
+  <!-- SEMÁFORO VERTICAL GIGANTE -->
+  <div class="flex-1 flex flex-col items-center justify-center my-4">
+    <div class="w-48 sm:w-56 bg-slate-900/90 p-6 rounded-full border-4 border-slate-800 shadow-2xl flex flex-col items-center space-y-8">
+      <!-- FOCO ROJO -->
+      <div id="red-bulb" class="w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_80px_rgba(244,63,94,0.9)] scale-105"></div>
+      <!-- FOCO VERDE -->
+      <div id="green-bulb" class="w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-950/40 opacity-20 border border-emerald-900/30"></div>
+    </div>
+  </div>
 
+  <!-- TEMPORIZADOR MINIMALISTA -->
+  <div class="z-10 mb-2">
+    <div class="bg-slate-900/80 border border-slate-800/80 backdrop-blur-md px-6 py-2.5 rounded-full shadow-2xl flex items-center justify-center">
+      <span id="timer-display" class="font-mono text-2xl font-bold tracking-wider text-slate-200">00:00:00</span>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIGURACIÓN DE HORARIOS -->
+  <div id="modal-settings" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold text-white">Configurar Comidas</h2>
+        <button id="close-settings" class="p-2 text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <div id="meals-container" class="flex-1 overflow-y-auto space-y-4 pr-1"></div>
+
+      <div class="mt-6 space-y-3">
+        <button id="btn-add-meal" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-sm border border-slate-700">
+          + Añadir Comida
+        </button>
+        <button id="btn-save-settings" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/50">
+          Guardar y Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE VER PROGRAMA -->
+  <div id="modal-list" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-bold text-white">Programa del Día</h2>
+        <button id="close-list" class="p-2 text-slate-400 hover:text-white">✕</button>
+      </div>
+      <div id="program-list" class="space-y-3 mb-6"></div>
+      <button id="btn-close-program" class="w-full py-3 bg-slate-800 text-slate-300 font-bold rounded-xl">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- SCRIPT LÓGICA VANILLA JS -->
+  <script>
     const defaultMeals = [
       { id: '1', name: 'Desayuno', start: '09:00', end: '09:45' },
       { id: '2', name: 'Almuerzo', start: '14:00', end: '15:00' },
       { id: '3', name: 'Cena', start: '20:00', end: '21:00' }
     ];
 
-    function App() {
-      const [meals, setMeals] = useState(() => {
-        const saved = localStorage.getItem('plan3mad_meal_slots');
-        return saved ? JSON.parse(saved) : defaultMeals;
+    let meals = JSON.parse(localStorage.getItem('plan3mad_meal_slots')) || defaultMeals;
+
+    const mainBg = document.getElementById('main-bg');
+    const redBulb = document.getElementById('red-bulb');
+    const greenBulb = document.getElementById('green-bulb');
+    const timerDisplay = document.getElementById('timer-display');
+
+    const modalSettings = document.getElementById('modal-settings');
+    const modalList = document.getElementById('modal-list');
+    const mealsContainer = document.getElementById('meals-container');
+    const programList = document.getElementById('program-list');
+
+    // MANTENER PANTALLA ENCENDIDA
+    if ('wakeLock' in navigator) {
+      navigator.wakeLock.request('screen').catch(() => {});
+    }
+
+    function saveMeals() {
+      localStorage.setItem('plan3mad_meal_slots', JSON.stringify(meals));
+    }
+
+    function formatSeconds(totalSecs) {
+      if (totalSecs < 0) return '00:00:00';
+      const h = Math.floor(totalSecs / 3600);
+      const m = Math.floor((totalSecs % 3600) / 60);
+      const s = totalSecs % 60;
+      return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
+    }
+
+    function updateApp() {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const currentSeconds = now.getSeconds();
+
+      let activeMeal = null;
+      let minMinutesToNext = Infinity;
+
+      meals.forEach(meal => {
+        const [sH, sM] = meal.start.split(':').map(Number);
+        const [eH, eM] = meal.end.split(':').map(Number);
+        const startMins = sH * 60 + sM;
+        const endMins = eH * 60 + eM;
+
+        if (currentMinutes >= startMins && currentMinutes < endMins) {
+          activeMeal = { ...meal, endMins };
+        }
+
+        let diff = startMins - currentMinutes;
+        if (diff <= 0) diff += 1440;
+        if (diff < minMinutesToNext) {
+          minMinutesToNext = diff;
+        }
       });
 
-      const [showSettings, setShowSettings] = useState(false);
-      const [showList, setShowList] = useState(false);
-      const [status, setStatus] = useState('FASTING');
-      const [timeRemaining, setTimeRemaining] = useState('00:00:00');
+      if (activeMeal) {
+        // MODO COMIDA (VERDE)
+        mainBg.className = 'bg-emerald-950/40 text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col justify-between items-center p-6 transition-colors duration-1000';
+        redBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-950/40 opacity-20 border border-rose-900/30';
+        greenBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-500 shadow-[0_0_80px_rgba(16,185,129,0.9)] scale-105';
 
-      useEffect(() => {
-        localStorage.setItem('plan3mad_meal_slots', JSON.stringify(meals));
-      }, [meals]);
+        const remainingSecs = (activeMeal.endMins - currentMinutes) * 60 - currentSeconds;
+        timerDisplay.textContent = formatSeconds(remainingSecs);
+      } else {
+        // MODO AYUNO (ROJO)
+        mainBg.className = 'bg-rose-950/40 text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col justify-between items-center p-6 transition-colors duration-1000';
+        redBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_80px_rgba(244,63,94,0.9)] scale-105';
+        greenBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-950/40 opacity-20 border border-emerald-900/30';
 
-      useEffect(() => {
-        if ('wakeLock' in navigator) {
-          navigator.wakeLock.request('screen').catch(() => {});
-        }
-      }, []);
+        const totalSecs = minMinutesToNext * 60 - currentSeconds;
+        timerDisplay.textContent = formatSeconds(totalSecs);
+      }
+    }
 
-      useEffect(() => {
-        const updateTimer = () => {
-          const now = new Date();
-          const currentMinutes = now.getHours() * 60 + now.getMinutes();
-          const currentSeconds = now.getSeconds();
+    function renderSettings() {
+      mealsContainer.innerHTML = '';
+      meals.forEach((meal, index) => {
+        const item = document.createElement('div');
+        item.className = 'bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 space-y-3';
+        item.innerHTML = `
+          <div class="flex justify-between items-center">
+            <input type="text" value="${meal.name}" data-index="${index}" class="meal-name-input bg-transparent font-semibold text-white focus:outline-none border-b border-transparent focus:border-emerald-500" />
+            ${meals.length > 1 ? `<button data-index="${index}" class="btn-delete-meal text-rose-400 text-xs font-bold hover:text-rose-300">Eliminar</button>` : ''}
+          </div>
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <label class="text-slate-400 text-xs block mb-1">Inicio</label>
+              <input type="time" value="${meal.start}" data-index="${index}" class="meal-start-input w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono" />
+            </div>
+            <div>
+              <label class="text-slate-400 text-xs block mb-1">Fin</label>
+              <input type="time" value="${meal.end}" data-index="${index}" class="meal-end-input w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono" />
+            </div>
+          </div>
+        `;
+        mealsContainer.appendChild(item);
+      });
 
-          let activeMeal = null;
-          let minMinutesToNext = Infinity;
-
-          meals.forEach(meal => {
-            const [sH, sM] = meal.start.split(':').map(Number);
-            const [eH, eM] = meal.end.split(':').map(Number);
-            const startMins = sH * 60 + sM;
-            const endMins = eH * 60 + eM;
-
-            if (currentMinutes >= startMins && currentMinutes < endMins) {
-              activeMeal = { ...meal, endMins };
-            }
-
-            let diff = startMins - currentMinutes;
-            if (diff <= 0) diff += 1440;
-            if (diff < minMinutesToNext) {
-              minMinutesToNext = diff;
-            }
-          });
-
-          if (activeMeal) {
-            setStatus('EATING');
-            const remainingSecs = (activeMeal.endMins - currentMinutes) * 60 - currentSeconds;
-            setTimeRemaining(formatSeconds(remainingSecs));
-          } else {
-            setStatus('FASTING');
-            const totalSecs = minMinutesToNext * 60 - currentSeconds;
-            setTimeRemaining(formatSeconds(totalSecs));
-          }
+      document.querySelectorAll('.meal-name-input').forEach(input => {
+        input.onchange = (e) => meals[e.target.dataset.index].name = e.target.value;
+      });
+      document.querySelectorAll('.meal-start-input').forEach(input => {
+        input.onchange = (e) => meals[e.target.dataset.index].start = e.target.value;
+      });
+      document.querySelectorAll('.meal-end-input').forEach(input => {
+        input.onchange = (e) => meals[e.target.dataset.index].end = e.target.value;
+      });
+      document.querySelectorAll('.btn-delete-meal').forEach(btn => {
+        btn.onclick = (e) => {
+          meals.splice(e.target.dataset.index, 1);
+          renderSettings();
         };
+      });
+    }
 
-        updateTimer();
-        const interval = setInterval(updateTimer, 1000);
-        return () => clearInterval(interval);
-      }, [meals]);
+    function renderProgram() {
+      programList.innerHTML = '';
+      meals.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'flex justify-between items-center p-3 bg-slate-800/40 rounded-xl border border-slate-800';
+        item.innerHTML = `
+          <span class="font-medium text-slate-200">${m.name}</span>
+          <span class="font-mono text-xs text-emerald-400 font-bold">${m.start} - ${m.end}</span>
+        `;
+        programList.appendChild(item);
+      });
+    }
 
-      const formatSeconds = (totalSecs) => {
-        if (totalSecs < 0) return '00:00:00';
-        const h = Math.floor(totalSecs / 3600);
-        const m = Math.floor((totalSecs % 3600) / 60);
-        const s = totalSecs % 60;
-        return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
-      };
+    // EVENTOS Y NAVEGACIÓN
+    document.getElementById('btn-settings').onclick = () => {
+      renderSettings();
+      modalSettings.classList.remove('hidden');
+    };
+    document.getElementById('close-settings').onclick = () => modalSettings.classList.add('hidden');
+    document.getElementById('btn-save-settings').onclick = () => {
+      saveMeals();
+      modalSettings.classList.add('hidden');
+      updateApp();
+    };
 
-      const toggleFullscreen = () => {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch(() => {});
-        } else {
-          document.exitFullscreen().catch(() => {});
-        }
-      };
+    document.getElementById('btn-add-meal').onclick = () => {
+      meals.push({ id: Date.now().toString(), name: 'Nueva Comida', start: '12:00', end: '13:00' });
+      renderSettings();
+    };
 
-      const handleMealChange = (index, field, value) => {
-        const updated = [...meals];
-        updated[index][field] = value;
-        setMeals(updated);
-      };
+    document.getElementById('btn-list').onclick = () => {
+      renderProgram();
+      modalList.classList.remove('hidden');
+    };
+    document.getElementById('close-list').onclick = () => modalList.classList.add('hidden');
+    document.getElementById('btn-close-program').onclick = () => modalList.classList.add('hidden');
 
-      const addMeal = () => {
-        setMeals([...meals, { id: Date.now().toString(), name: 'Nueva Comida', start: '12:00', end: '13:00' }]);
-      };
+    document.getElementById('btn-fullscreen').onclick = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    };
 
-      const removeMeal = (index) => {
-        setMeals(meals.filter((_, i) => i !== index));
-      };
-
-      const isGreen = status === 'EATING';
-
-      return (
-        <div className={`h-screen w-screen flex flex-col items-center justify-between p-6 transition-colors duration-1000 ${
-          isGreen ? 'bg-emerald-950/40' : 'bg-rose-950/40'
-        }`}>
-          
-          <div className="w-full max-w-sm flex justify-between items-center z-10">
-            <button onClick={() => setShowSettings(true)} className="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
-              <SettingsIcon />
-            </button>
-            <button onClick={() => setShowList(true)} className="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
-              <ListIcon />
-            </button>
-            <button onClick={toggleFullscreen} className="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
-              <MaximizeIcon />
-            </button>
-          </div>
-
-          <div className="flex-1 flex flex-col items-center justify-center my-4">
-            <div className="w-48 sm:w-56 bg-slate-900/90 p-6 rounded-full border-4 border-slate-800 shadow-2xl flex flex-col items-center space-y-8">
-              <div className={`w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 ${
-                !isGreen 
-                  ? 'bg-rose-500 shadow-[0_0_80px_rgba(244,63,94,0.9)] scale-105' 
-                  : 'bg-rose-950/40 opacity-20 border border-rose-900/30'
-              }`} />
-
-              <div className={`w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 ${
-                isGreen 
-                  ? 'bg-emerald-500 shadow-[0_0_80px_rgba(16,185,129,0.9)] scale-105' 
-                  : 'bg-emerald-950/40 opacity-20 border border-emerald-900/30'
-              }`} />
-            </div>
-          </div>
-
-          <div className="z-10 mb-2">
-            <div className="bg-slate-900/80 border border-slate-800/80 backdrop-blur-md px-6 py-2.5 rounded-full shadow-2xl flex items-center justify-center">
-              <span className="font-mono text-2xl font-bold tracking-wider text-slate-200">
-                {timeRemaining}
-              </span>
-            </div>
-          </div>
-
-          {showSettings && (
-            <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-              <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] flex flex-col">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-bold text-white">Horarios de Comidas</h2>
-                  <button onClick={() => setShowSettings(false)} className="p-2 text-slate-400 hover:text-white">
-                    <XIcon />
-                  </button>
-                </div>
-
-                <div className="flex-1 overflow-y-auto space-y-4 pr-1">
-                  {meals.map((meal, index) => (
-                    <div key={meal.id} className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 space-y-3">
-                      <div className="flex justify-between items-center">
-                        <input
-                          type="text"
-                          value={meal.name}
-                          onChange={(e) => handleMealChange(index, 'name', e.target.value)}
-                          className="bg-transparent font-semibold text-white focus:outline-none border-b border-transparent focus:border-emerald-500"
-                        />
-                        {
+    setInterval(updateApp, 1000);
+    updateApp();
+  </script>
+</body>
+</html>

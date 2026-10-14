@@ -137,6 +137,30 @@
       return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
     }
 
+    function getFirstMealOfNextDayTimestamp() {
+      const now = new Date();
+      for (let offset = 1; offset <= 7; offset++) {
+        const checkDate = new Date(now);
+        checkDate.setDate(now.getDate() + offset);
+        const checkDay = checkDate.getDay();
+
+        const dayMeals = meals.filter(m => getMealDays(m).includes(checkDay));
+        if (dayMeals.length > 0) {
+          dayMeals.sort((a, b) => {
+            const [aH, aM] = a.start.split(':').map(Number);
+            const [bH, bM] = b.start.split(':').map(Number);
+            return (aH * 60 + aM) - (bH * 60 + bM);
+          });
+
+          const firstMeal = dayMeals[0];
+          const [fH, fM] = firstMeal.start.split(':').map(Number);
+          checkDate.setHours(fH, fM, 0, 0);
+          return checkDate.getTime();
+        }
+      }
+      return now.getTime() + 24 * 3600 * 1000;
+    }
+
     // Estilos de focos encendidos y apagados
     const BULB_OFF_RED = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-rose-950/20 opacity-20 border border-rose-900/20';
     const BULB_OFF_YELLOW = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-amber-950/20 opacity-20 border border-amber-900/20';
@@ -148,6 +172,22 @@
 
     function updateApp() {
       const now = new Date();
+      const currentMs = now.getTime();
+      const forcedFastUntil = localStorage.getItem('plan3mad_forced_fast_until');
+
+      // AYUNO FORZADO (PULSACIÓN DE 3 SEGUNDOS)
+      if (forcedFastUntil && currentMs < parseInt(forcedFastUntil)) {
+        redBulb.className = BULB_ON_RED;
+        yellowBulb.className = BULB_OFF_YELLOW;
+        greenBulb.className = BULB_OFF_GREEN;
+
+        const totalSecs = Math.floor((parseInt(forcedFastUntil) - currentMs) / 1000);
+        timerDisplay.textContent = formatSeconds(totalSecs);
+        return;
+      } else if (forcedFastUntil) {
+        localStorage.removeItem('plan3mad_forced_fast_until');
+      }
+
       const currentDay = now.getDay();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       const currentSeconds = now.getSeconds();
@@ -317,6 +357,39 @@
       });
     }
 
+    // GESTO DE MANTENER PULSADO 3 SEGUNDOS EN CUALQUIER PARTE DE LA PANTALLA
+    let holdTimer = null;
+    let wasHoldTriggered = false;
+
+    function startHold(e) {
+      if (e.target.closest('#modal-settings') || e.target.closest('#modal-list') || e.target.closest('#top-bar')) return;
+      wasHoldTriggered = false;
+      clearTimeout(holdTimer);
+      holdTimer = setTimeout(() => {
+        wasHoldTriggered = true;
+        const existingForced = localStorage.getItem('plan3mad_forced_fast_until');
+        if (existingForced && parseInt(existingForced) > Date.now()) {
+          localStorage.removeItem('plan3mad_forced_fast_until');
+        } else {
+          const targetTs = getFirstMealOfNextDayTimestamp();
+          localStorage.setItem('plan3mad_forced_fast_until', targetTs);
+        }
+        if (navigator.vibrate) navigator.vibrate(200);
+        updateApp();
+      }, 3000);
+    }
+
+    function cancelHold() {
+      clearTimeout(holdTimer);
+    }
+
+    document.addEventListener('mousedown', startHold);
+    document.addEventListener('mouseup', cancelHold);
+    document.addEventListener('mouseleave', cancelHold);
+    document.addEventListener('touchstart', startHold, { passive: true });
+    document.addEventListener('touchend', cancelHold);
+    document.addEventListener('touchcancel', cancelHold);
+
     // EVENTOS Y PANTALLA COMPLETA
     document.getElementById('btn-settings').onclick = () => {
       renderSettings();
@@ -358,8 +431,12 @@
       }
     });
 
-    // Tocar la pantalla en modo maximizado para salir de pantalla completa
+    // Tocar la pantalla en modo maximizado para salir de pantalla completa (evitando salir si fue la pulsación de 3s)
     document.body.addEventListener('click', (e) => {
+      if (wasHoldTriggered) {
+        wasHoldTriggered = false;
+        return;
+      }
       if (document.fullscreenElement && !e.target.closest('#modal-settings') && !e.target.closest('#modal-list') && !e.target.closest('#top-bar')) {
         document.exitFullscreen().catch(() => {});
       }

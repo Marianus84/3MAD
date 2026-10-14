@@ -10,10 +10,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col items-center p-4 sm:p-6" id="main-bg">
+<body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col items-center justify-center relative p-4 sm:p-6" id="main-bg">
 
-  <!-- BARRA SUPERIOR DE BOTONES (Se oculta al maximizar) -->
-  <div id="top-bar" class="w-full max-w-sm flex justify-between items-center z-10 transition-opacity duration-300">
+  <!-- BARRA SUPERIOR DE BOTONES (Flotante arriba, se oculta al maximizar) -->
+  <div id="top-bar" class="absolute top-4 sm:top-6 left-4 right-4 max-w-sm mx-auto flex justify-between items-center z-20 transition-opacity duration-300">
     <button id="btn-settings" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
       <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -32,8 +32,8 @@
     </button>
   </div>
 
-  <!-- SEMÁFORO VERTICAL TAMAÑO COMPLETO -->
-  <div class="flex-[3] flex flex-col items-center justify-center my-auto">
+  <!-- SEMÁFORO VERTICAL (EXACTAMENTE EN EL CENTRO DE LA PANTALLA) -->
+  <div class="flex flex-col items-center justify-center my-auto z-10">
     <div class="w-40 sm:w-48 bg-zinc-950 p-4 sm:p-5 rounded-[3rem] border-4 border-zinc-900 shadow-2xl flex flex-col items-center space-y-4 sm:space-y-6">
       <!-- FOCO ROJO -->
       <div id="red-bulb" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700"></div>
@@ -44,8 +44,8 @@
     </div>
   </div>
 
-  <!-- TEMPORIZADOR A MITAD DE CAMINO ENTRE EL SEMÁFORO Y EL FINAL DE LA PANTALLA -->
-  <div class="flex-1 flex items-center justify-center z-10 w-full">
+  <!-- TEMPORIZADOR COMPACTO (Flotante abajo) -->
+  <div class="absolute bottom-6 sm:bottom-10 left-0 right-0 flex justify-center z-20">
     <div class="bg-zinc-950 border border-zinc-900/90 backdrop-blur-md px-3.5 py-1 rounded-full shadow-xl flex items-center justify-center">
       <span id="timer-display" class="font-mono text-sm sm:text-base font-bold tracking-wider text-zinc-300">00:00:00</span>
     </div>

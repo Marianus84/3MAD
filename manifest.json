@@ -1,24 +1,25 @@
 {
-"name": "Semáforo de Ayuno - Pantalla Cocina",
-"short_name": "SemáforoAyuno",
-"description": "Semáforo visual de ayuno e intervalos de comida para pantalla de cocina siempre activa.",
-"start_url": "./index.html",
-"display": "standalone",
-"orientation": "any",
-"background_color": "#030712",
-"theme_color": "#030712",
-"icons": [
-{
-"src": "icon-192.png",
-"sizes": "192x192",
-"type": "image/png",
-"purpose": "any maskable"
-},
-{
-"src": "icon-512.png",
-"sizes": "512x512",
-"type": "image/png",
-"purpose": "any maskable"
-}
-]
+  "name": "Semáforo de Ayuno - Plan 3MAD",
+  "short_name": "Semáforo3MAD",
+  "description": "Control visual de ventanas de alimentación y ayuno para pantalla de cocina.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }

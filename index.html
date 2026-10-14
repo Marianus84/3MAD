@@ -5,28 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Semáforo de Ayuno - Plan 3MAD</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#030712">
+  <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-950 text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col justify-between items-center p-6 transition-colors duration-1000" id="main-bg">
+<body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col justify-between items-center p-6" id="main-bg">
 
   <!-- BARRA SUPERIOR DE BOTONES -->
   <div class="w-full max-w-sm flex justify-between items-center z-10">
-    <button id="btn-settings" class="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
-      <svg class="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button id="btn-settings" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
+      <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     </button>
-    <button id="btn-list" class="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
-      <svg class="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button id="btn-list" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
+      <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
       </svg>
     </button>
-    <button id="btn-fullscreen" class="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
-      <svg class="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button id="btn-fullscreen" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
+      <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
       </svg>
     </button>
@@ -34,36 +34,36 @@
 
   <!-- SEMÁFORO VERTICAL GIGANTE -->
   <div class="flex-1 flex flex-col items-center justify-center my-4">
-    <div class="w-48 sm:w-56 bg-slate-900/90 p-6 rounded-full border-4 border-slate-800 shadow-2xl flex flex-col items-center space-y-8">
+    <div class="w-48 sm:w-56 bg-zinc-950 p-6 rounded-full border-4 border-zinc-900 shadow-2xl flex flex-col items-center space-y-8">
       <!-- FOCO ROJO -->
-      <div id="red-bulb" class="w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_80px_rgba(244,63,94,0.9)] scale-105"></div>
+      <div id="red-bulb" class="w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_90px_rgba(244,63,94,0.9)] scale-105"></div>
       <!-- FOCO VERDE -->
-      <div id="green-bulb" class="w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-950/40 opacity-20 border border-emerald-900/30"></div>
+      <div id="green-bulb" class="w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-950/20 opacity-20 border border-emerald-900/20"></div>
     </div>
   </div>
 
   <!-- TEMPORIZADOR MINIMALISTA -->
   <div class="z-10 mb-2">
-    <div class="bg-slate-900/80 border border-slate-800/80 backdrop-blur-md px-6 py-2.5 rounded-full shadow-2xl flex items-center justify-center">
-      <span id="timer-display" class="font-mono text-2xl font-bold tracking-wider text-slate-200">00:00:00</span>
+    <div class="bg-zinc-950 border border-zinc-900 backdrop-blur-md px-6 py-2.5 rounded-full shadow-2xl flex items-center justify-center">
+      <span id="timer-display" class="font-mono text-2xl font-bold tracking-wider text-zinc-200">00:00:00</span>
     </div>
   </div>
 
   <!-- MODAL DE CONFIGURACIÓN DE HORARIOS -->
-  <div id="modal-settings" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] flex flex-col">
+  <div id="modal-settings" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-950 border border-zinc-900 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] flex flex-col">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-bold text-white">Configurar Comidas</h2>
-        <button id="close-settings" class="p-2 text-slate-400 hover:text-white">✕</button>
+        <button id="close-settings" class="p-2 text-zinc-400 hover:text-white">✕</button>
       </div>
 
       <div id="meals-container" class="flex-1 overflow-y-auto space-y-4 pr-1"></div>
 
       <div class="mt-6 space-y-3">
-        <button id="btn-add-meal" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-sm border border-slate-700">
+        <button id="btn-add-meal" class="w-full py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-bold rounded-xl text-sm border border-zinc-800">
           + Añadir Comida
         </button>
-        <button id="btn-save-settings" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/50">
+        <button id="btn-save-settings" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-950">
           Guardar y Cerrar
         </button>
       </div>
@@ -71,14 +71,14 @@
   </div>
 
   <!-- MODAL DE VER PROGRAMA -->
-  <div id="modal-list" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl">
+  <div id="modal-list" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-950 border border-zinc-900 rounded-3xl w-full max-w-sm p-6 shadow-2xl">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-bold text-white">Programa del Día</h2>
-        <button id="close-list" class="p-2 text-slate-400 hover:text-white">✕</button>
+        <button id="close-list" class="p-2 text-zinc-400 hover:text-white">✕</button>
       </div>
       <div id="program-list" class="space-y-3 mb-6"></div>
-      <button id="btn-close-program" class="w-full py-3 bg-slate-800 text-slate-300 font-bold rounded-xl">Cerrar</button>
+      <button id="btn-close-program" class="w-full py-3 bg-zinc-900 text-zinc-300 font-bold rounded-xl">Cerrar</button>
     </div>
   </div>
 
@@ -92,7 +92,6 @@
 
     let meals = JSON.parse(localStorage.getItem('plan3mad_meal_slots')) || defaultMeals;
 
-    const mainBg = document.getElementById('main-bg');
     const redBulb = document.getElementById('red-bulb');
     const greenBulb = document.getElementById('green-bulb');
     const timerDisplay = document.getElementById('timer-display');
@@ -146,17 +145,15 @@
 
       if (activeMeal) {
         // MODO COMIDA (VERDE)
-        mainBg.className = 'bg-emerald-950/40 text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col justify-between items-center p-6 transition-colors duration-1000';
-        redBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-950/40 opacity-20 border border-rose-900/30';
-        greenBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-500 shadow-[0_0_80px_rgba(16,185,129,0.9)] scale-105';
+        redBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-950/20 opacity-20 border border-rose-900/20';
+        greenBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-500 shadow-[0_0_90px_rgba(16,185,129,0.9)] scale-105';
 
         const remainingSecs = (activeMeal.endMins - currentMinutes) * 60 - currentSeconds;
         timerDisplay.textContent = formatSeconds(remainingSecs);
       } else {
         // MODO AYUNO (ROJO)
-        mainBg.className = 'bg-rose-950/40 text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col justify-between items-center p-6 transition-colors duration-1000';
-        redBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_80px_rgba(244,63,94,0.9)] scale-105';
-        greenBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-950/40 opacity-20 border border-emerald-900/30';
+        redBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_90px_rgba(244,63,94,0.9)] scale-105';
+        greenBulb.className = 'w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 bg-emerald-950/20 opacity-20 border border-emerald-900/20';
 
         const totalSecs = minMinutesToNext * 60 - currentSeconds;
         timerDisplay.textContent = formatSeconds(totalSecs);
@@ -167,7 +164,7 @@
       mealsContainer.innerHTML = '';
       meals.forEach((meal, index) => {
         const item = document.createElement('div');
-        item.className = 'bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 space-y-3';
+        item.className = 'bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800 space-y-3';
         item.innerHTML = `
           <div class="flex justify-between items-center">
             <input type="text" value="${meal.name}" data-index="${index}" class="meal-name-input bg-transparent font-semibold text-white focus:outline-none border-b border-transparent focus:border-emerald-500" />
@@ -175,12 +172,12 @@
           </div>
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <label class="text-slate-400 text-xs block mb-1">Inicio</label>
-              <input type="time" value="${meal.start}" data-index="${index}" class="meal-start-input w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono" />
+              <label class="text-zinc-400 text-xs block mb-1">Inicio</label>
+              <input type="time" value="${meal.start}" data-index="${index}" class="meal-start-input w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono" />
             </div>
             <div>
-              <label class="text-slate-400 text-xs block mb-1">Fin</label>
-              <input type="time" value="${meal.end}" data-index="${index}" class="meal-end-input w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono" />
+              <label class="text-zinc-400 text-xs block mb-1">Fin</label>
+              <input type="time" value="${meal.end}" data-index="${index}" class="meal-end-input w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono" />
             </div>
           </div>
         `;
@@ -208,9 +205,9 @@
       programList.innerHTML = '';
       meals.forEach(m => {
         const item = document.createElement('div');
-        item.className = 'flex justify-between items-center p-3 bg-slate-800/40 rounded-xl border border-slate-800';
+        item.className = 'flex justify-between items-center p-3 bg-zinc-900/80 rounded-xl border border-zinc-800';
         item.innerHTML = `
-          <span class="font-medium text-slate-200">${m.name}</span>
+          <span class="font-medium text-zinc-200">${m.name}</span>
           <span class="font-mono text-xs text-emerald-400 font-bold">${m.start} - ${m.end}</span>
         `;
         programList.appendChild(item);

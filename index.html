@@ -2,567 +2,208 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Semáforo de Ayuno - Pantalla Cocina</title>
-  
-  <!-- Tailwind CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Semáforo de Ayuno - Plan 3MAD</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#030712">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- React & React DOM -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  
-  <!-- Babel for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #030712;
-      color: #f9fafb;
-      overflow: hidden;
-      user-select: none;
-    }
-
-    .font-mono-digits {
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* Glowing Traffic Light Animations */
-    @keyframes pulse-red-intense {
-      0%, 100% {
-        box-shadow: 0 0 45px rgba(244, 63, 94, 0.85), 0 0 100px rgba(244, 63, 94, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.8);
-      }
-      50% {
-        box-shadow: 0 0 85px rgba(244, 63, 94, 1), 0 0 150px rgba(244, 63, 94, 0.8), inset 0 0 40px rgba(255, 255, 255, 0.95);
-      }
-    }
-
-    @keyframes pulse-green-intense {
-      0%, 100% {
-        box-shadow: 0 0 45px rgba(16, 185, 129, 0.85), 0 0 100px rgba(16, 185, 129, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.8);
-      }
-      50% {
-        box-shadow: 0 0 85px rgba(16, 185, 129, 1), 0 0 150px rgba(16, 185, 129, 0.8), inset 0 0 40px rgba(255, 255, 255, 0.95);
-      }
-    }
-
-    .light-active-red {
-      animation: pulse-red-intense 2.5s infinite ease-in-out;
-    }
-
-    .light-active-green {
-      animation: pulse-green-intense 2.5s infinite ease-in-out;
-    }
-
-    /* Ambient background glow */
-    .bg-glow-red {
-      background: radial-gradient(circle at 50% 50%, rgba(225, 29, 72, 0.22) 0%, rgba(3, 7, 18, 1) 75%);
-    }
-
-    .bg-glow-green {
-      background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.22) 0%, rgba(3, 7, 18, 1) 75%);
-    }
-
-    /* Custom scrollbar for settings modal */
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 9999px;
-    }
-  </style>
 </head>
-<body>
+<body class="bg-gray-950 text-white font-sans antialiased overflow-hidden select-none">
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useMemo } = React;
+    const { useState, useEffect } = React;
 
-    const IconSettings = ({ size = 20, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    );
-    const IconX = ({ size = 20, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    );
-    const IconZap = ({ size = 16, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    );
-    const IconMaximize = ({ size = 20, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-    );
-    const IconUtensils = ({ size = 18, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/><path d="M15 2v18"/><path d="M7 2v20"/><path d="M4 2c0 2.5 1 4 3 4s3-1.5 3-4"/></svg>
-    );
-    const IconPlus = ({ size = 18, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    );
-    const IconTrash = ({ size = 16, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+    const SettingsIcon = () => (
+      <svg className="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
     );
 
-    const DEFAULT_MEAL_SLOTS = [
-      { id: '1', name: 'Desayuno', startTime: '09:00', endTime: '09:45', enabled: true },
-      { id: '2', name: 'Almuerzo / Comida', startTime: '14:00', endTime: '15:00', enabled: true },
-      { id: '3', name: 'Cena', startTime: '20:00', endTime: '21:00', enabled: true },
+    const MaximizeIcon = () => (
+      <svg className="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+      </svg>
+    );
+
+    const ListIcon = () => (
+      <svg className="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+      </svg>
+    );
+
+    const XIcon = () => (
+      <svg className="w-6 h-6 text-slate-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    );
+
+    const defaultMeals = [
+      { id: '1', name: 'Desayuno', start: '09:00', end: '09:45' },
+      { id: '2', name: 'Almuerzo', start: '14:00', end: '15:00' },
+      { id: '3', name: 'Cena', start: '20:00', end: '21:00' }
     ];
-
-    function timeToSec(timeStr) {
-      if (!timeStr) return 0;
-      const [h, m] = timeStr.split(':').map(Number);
-      return (h || 0) * 3600 + (m || 0) * 60;
-    }
-
-    function getMealIntervalStatus(now, mealsList) {
-      const activeMeals = mealsList.filter(m => m.enabled && m.startTime && m.endTime);
-      const curSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-      const DAY = 86400;
-
-      if (activeMeals.length === 0) {
-        return {
-          isEating: false,
-          activeMeal: null,
-          nextMeal: null,
-          hours: 0,
-          mins: 0,
-          secs: 0,
-          label: 'Sin comidas configuradas'
-        };
-      }
-
-      // Check if current time falls within ANY active meal interval
-      for (const meal of activeMeals) {
-        const startSec = timeToSec(meal.startTime);
-        const endSec = timeToSec(meal.endTime);
-
-        let inSlot = false;
-        let remainingSec = 0;
-
-        if (startSec < endSec) {
-          if (curSec >= startSec && curSec < endSec) {
-            inSlot = true;
-            remainingSec = endSec - curSec;
-          }
-        } else if (startSec > endSec) {
-          // Window spans midnight (e.g. 23:00 to 01:00)
-          if (curSec >= startSec || curSec < endSec) {
-            inSlot = true;
-            remainingSec = curSec >= startSec ? (DAY - curSec) + endSec : endSec - curSec;
-          }
-        }
-
-        if (inSlot) {
-          const hours = Math.floor(remainingSec / 3600);
-          const mins = Math.floor((remainingSec % 3600) / 60);
-          const secs = remainingSec % 60;
-          return {
-            isEating: true,
-            activeMeal: meal,
-            nextMeal: null,
-            hours,
-            mins,
-            secs,
-            label: `En hora de: ${meal.name}`
-          };
-        }
-      }
-
-      // If NOT in any eating interval -> FASTING (ROJO)
-      // Find the next upcoming meal start time
-      let minDiff = Infinity;
-      let nextMeal = null;
-
-      for (const meal of activeMeals) {
-        const startSec = timeToSec(meal.startTime);
-        let diff = startSec - curSec;
-        if (diff <= 0) {
-          diff += DAY; // Happens tomorrow
-        }
-        if (diff < minDiff) {
-          minDiff = diff;
-          nextMeal = meal;
-        }
-      }
-
-      const hours = Math.floor(minDiff / 3600);
-      const mins = Math.floor((minDiff % 3600) / 60);
-      const secs = minDiff % 60;
-
-      return {
-        isEating: false,
-        activeMeal: null,
-        nextMeal,
-        hours,
-        mins,
-        secs,
-        label: nextMeal ? `Próxima: ${nextMeal.name} (${nextMeal.startTime})` : 'Sin próxima comida'
-      };
-    }
 
     function App() {
       const [meals, setMeals] = useState(() => {
-        const saved = localStorage.getItem('plan3mad_interval_meals');
-        return saved ? JSON.parse(saved) : DEFAULT_MEAL_SLOTS;
+        const saved = localStorage.getItem('plan3mad_meal_slots');
+        return saved ? JSON.parse(saved) : defaultMeals;
       });
 
       const [showSettings, setShowSettings] = useState(false);
-      const [showMealsPanel, setShowMealsPanel] = useState(false);
-      const [wakeLockActive, setWakeLockActive] = useState(false);
-      const [currentTime, setCurrentTime] = useState(new Date());
+      const [showList, setShowList] = useState(false);
+      const [status, setStatus] = useState('FASTING');
+      const [timeRemaining, setTimeRemaining] = useState('00:00:00');
 
       useEffect(() => {
-        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-        return () => clearInterval(timer);
-      }, []);
-
-      useEffect(() => {
-        localStorage.setItem('plan3mad_interval_meals', JSON.stringify(meals));
+        localStorage.setItem('plan3mad_meal_slots', JSON.stringify(meals));
       }, [meals]);
 
       useEffect(() => {
-        let wakeLock = null;
-        const requestWakeLock = async () => {
-          try {
-            if ('wakeLock' in navigator) {
-              wakeLock = await navigator.wakeLock.request('screen');
-              setWakeLockActive(true);
-            }
-          } catch (err) {
-            console.log('Wake Lock error:', err);
-            setWakeLockActive(false);
-          }
-        };
-
-        requestWakeLock();
-
-        const handleVisibilityChange = () => {
-          if (document.visibilityState === 'visible') {
-            requestWakeLock();
-          }
-        };
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => {
-          document.removeEventListener('visibilitychange', handleVisibilityChange);
-          if (wakeLock) wakeLock.release().catch(() => {});
-        };
+        if ('wakeLock' in navigator) {
+          navigator.wakeLock.request('screen').catch(() => {});
+        }
       }, []);
 
-      const status = useMemo(() => {
-        return getMealIntervalStatus(currentTime, meals);
-      }, [currentTime, meals]);
+      useEffect(() => {
+        const updateTimer = () => {
+          const now = new Date();
+          const currentMinutes = now.getHours() * 60 + now.getMinutes();
+          const currentSeconds = now.getSeconds();
 
-      const handleAddMeal = () => {
-        const newMeal = {
-          id: Date.now().toString(),
-          name: `Comida ${meals.length + 1}`,
-          startTime: '16:00',
-          endTime: '16:30',
-          enabled: true
+          let activeMeal = null;
+          let minMinutesToNext = Infinity;
+
+          meals.forEach(meal => {
+            const [sH, sM] = meal.start.split(':').map(Number);
+            const [eH, eM] = meal.end.split(':').map(Number);
+            const startMins = sH * 60 + sM;
+            const endMins = eH * 60 + eM;
+
+            if (currentMinutes >= startMins && currentMinutes < endMins) {
+              activeMeal = { ...meal, endMins };
+            }
+
+            let diff = startMins - currentMinutes;
+            if (diff <= 0) diff += 1440;
+            if (diff < minMinutesToNext) {
+              minMinutesToNext = diff;
+            }
+          });
+
+          if (activeMeal) {
+            setStatus('EATING');
+            const remainingSecs = (activeMeal.endMins - currentMinutes) * 60 - currentSeconds;
+            setTimeRemaining(formatSeconds(remainingSecs));
+          } else {
+            setStatus('FASTING');
+            const totalSecs = minMinutesToNext * 60 - currentSeconds;
+            setTimeRemaining(formatSeconds(totalSecs));
+          }
         };
-        setMeals([...meals, newMeal]);
+
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+        return () => clearInterval(interval);
+      }, [meals]);
+
+      const formatSeconds = (totalSecs) => {
+        if (totalSecs < 0) return '00:00:00';
+        const h = Math.floor(totalSecs / 3600);
+        const m = Math.floor((totalSecs % 3600) / 60);
+        const s = totalSecs % 60;
+        return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
       };
 
-      const handleUpdateMeal = (id, field, value) => {
-        setMeals(meals.map(m => m.id === id ? { ...m, [field]: value } : m));
-      };
-
-      const handleDeleteMeal = (id) => {
-        setMeals(meals.filter(m => m.id !== id));
-      };
-
-      const handlePreset = (presetType) => {
-        if (presetType === '3_meals') {
-          setMeals([
-            { id: '1', name: 'Desayuno', startTime: '09:00', endTime: '09:45', enabled: true },
-            { id: '2', name: 'Almuerzo / Comida', startTime: '14:00', endTime: '15:00', enabled: true },
-            { id: '3', name: 'Cena', startTime: '20:00', endTime: '21:00', enabled: true }
-          ]);
-        } else if (presetType === '2_meals') {
-          setMeals([
-            { id: '1', name: 'Primera Comida', startTime: '13:00', endTime: '14:00', enabled: true },
-            { id: '2', name: 'Segunda Comida', startTime: '19:30', endTime: '20:30', enabled: true }
-          ]);
-        } else if (presetType === 'omad') {
-          setMeals([
-            { id: '1', name: 'Comida Única (OMAD)', startTime: '19:00', endTime: '20:00', enabled: true }
-          ]);
-        } else if (presetType === '4_meals') {
-          setMeals([
-            { id: '1', name: 'Desayuno', startTime: '08:30', endTime: '09:00', enabled: true },
-            { id: '2', name: 'Comida', startTime: '13:30', endTime: '14:15', enabled: true },
-            { id: '3', name: 'Merienda', startTime: '17:30', endTime: '18:00', enabled: true },
-            { id: '4', name: 'Cena', startTime: '20:30', endTime: '21:00', enabled: true }
-          ]);
-        }
-      };
-
-      const toggleFullScreen = () => {
+      const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
           document.documentElement.requestFullscreen().catch(() => {});
         } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen().catch(() => {});
-          }
+          document.exitFullscreen().catch(() => {});
         }
       };
 
+      const handleMealChange = (index, field, value) => {
+        const updated = [...meals];
+        updated[index][field] = value;
+        setMeals(updated);
+      };
+
+      const addMeal = () => {
+        setMeals([...meals, { id: Date.now().toString(), name: 'Nueva Comida', start: '12:00', end: '13:00' }]);
+      };
+
+      const removeMeal = (index) => {
+        setMeals(meals.filter((_, i) => i !== index));
+      };
+
+      const isGreen = status === 'EATING';
+
       return (
-        <div className={`h-screen w-screen flex flex-col justify-between transition-colors duration-1000 relative select-none ${
-          status.isEating ? 'bg-glow-green' : 'bg-glow-red'
+        <div className={`h-screen w-screen flex flex-col items-center justify-between p-6 transition-colors duration-1000 ${
+          isGreen ? 'bg-emerald-950/40' : 'bg-rose-950/40'
         }`}>
+          
+          <div className="w-full max-w-sm flex justify-between items-center z-10">
+            <button onClick={() => setShowSettings(true)} className="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
+              <SettingsIcon />
+            </button>
+            <button onClick={() => setShowList(true)} className="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
+              <ListIcon />
+            </button>
+            <button onClick={toggleFullscreen} className="p-3 rounded-full bg-slate-900/60 backdrop-blur border border-slate-800 shadow-lg active:scale-95 transition-all">
+              <MaximizeIcon />
+            </button>
+          </div>
 
-          {/* Minimal Controls Header - No text, no clock */}
-          <header className="p-4 sm:p-6 flex justify-between items-center z-20 w-full max-w-6xl mx-auto">
-            <div className="flex items-center space-x-2 bg-slate-900/60 backdrop-blur-md px-3 py-2.5 rounded-full border border-slate-800/80">
-              <span className={`w-2.5 h-2.5 rounded-full ${wakeLockActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+          <div className="flex-1 flex flex-col items-center justify-center my-4">
+            <div className="w-48 sm:w-56 bg-slate-900/90 p-6 rounded-full border-4 border-slate-800 shadow-2xl flex flex-col items-center space-y-8">
+              <div className={`w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 ${
+                !isGreen 
+                  ? 'bg-rose-500 shadow-[0_0_80px_rgba(244,63,94,0.9)] scale-105' 
+                  : 'bg-rose-950/40 opacity-20 border border-rose-900/30'
+              }`} />
+
+              <div className={`w-36 h-36 sm:w-44 sm:h-44 rounded-full transition-all duration-700 ${
+                isGreen 
+                  ? 'bg-emerald-500 shadow-[0_0_80px_rgba(16,185,129,0.9)] scale-105' 
+                  : 'bg-emerald-950/40 opacity-20 border border-emerald-900/30'
+              }`} />
             </div>
+          </div>
 
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => setShowMealsPanel(!showMealsPanel)}
-                className="p-2.5 bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md rounded-full border border-slate-800/80 text-slate-300 transition-transform active:scale-95"
-                title="Ver lista de comidas"
-              >
-                <IconUtensils size={20} className={status.isEating ? "text-emerald-400" : "text-amber-400"} />
-              </button>
-
-              <button
-                onClick={toggleFullScreen}
-                className="p-2.5 bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md rounded-full border border-slate-800/80 text-slate-300 transition-transform active:scale-95"
-                title="Pantalla Completa"
-              >
-                <IconMaximize size={20} />
-              </button>
-
-              <button
-                onClick={() => setShowSettings(true)}
-                className="p-2.5 bg-slate-900/60 hover:bg-slate-800/80 backdrop-blur-md rounded-full border border-slate-800/80 text-amber-400 transition-transform active:scale-95"
-                title="Ajustar Horarios"
-              >
-                <IconSettings size={20} />
-              </button>
+          <div className="z-10 mb-2">
+            <div className="bg-slate-900/80 border border-slate-800/80 backdrop-blur-md px-6 py-2.5 rounded-full shadow-2xl flex items-center justify-center">
+              <span className="font-mono text-2xl font-bold tracking-wider text-slate-200">
+                {timeRemaining}
+              </span>
             </div>
-          </header>
+          </div>
 
-          {/* MAIN GIGANTIC VERTICAL TRAFFIC LIGHT AREA */}
-          <main className="flex-1 flex flex-col items-center justify-center p-2 z-10 text-center w-full">
-            
-            {/* GIANT VERTICAL HOUSING */}
-            <div className="bg-slate-950/90 border-4 sm:border-8 border-slate-800 p-5 sm:p-8 rounded-[3.5rem] sm:rounded-[4.5rem] shadow-2xl flex flex-col items-center justify-center gap-5 sm:gap-8 backdrop-blur-xl mb-4">
-              
-              {/* RED LIGHT (TOP) */}
-              <div className={`w-32 h-32 sm:w-48 sm:h-48 md:w-56 md:h-56 rounded-full border-4 sm:border-8 transition-all duration-700 flex items-center justify-center ${
-                !status.isEating 
-                  ? 'bg-rose-500 border-rose-200 light-active-red' 
-                  : 'bg-rose-950/25 border-rose-950/40 opacity-10'
-              }`}>
-                {!status.isEating && <span className="w-8 h-8 sm:w-12 sm:h-12 bg-white/90 rounded-full blur-[2px]"></span>}
-              </div>
-
-              {/* GREEN LIGHT (BOTTOM) */}
-              <div className={`w-32 h-32 sm:w-48 sm:h-48 md:w-56 md:h-56 rounded-full border-4 sm:border-8 transition-all duration-700 flex items-center justify-center ${
-                status.isEating 
-                  ? 'bg-emerald-500 border-emerald-200 light-active-green' 
-                  : 'bg-emerald-950/25 border-emerald-950/40 opacity-10'
-              }`}>
-                {status.isEating && <span className="w-8 h-8 sm:w-12 sm:h-12 bg-white/90 rounded-full blur-[2px]"></span>}
-              </div>
-
-            </div>
-
-            {/* SMALL COMPACT COUNTDOWN TIMER */}
-            <div className="bg-slate-900/90 border border-slate-800 px-5 py-2 rounded-2xl backdrop-blur-md shadow-xl flex items-center space-x-3">
-              <span className={`w-2.5 h-2.5 rounded-full ${status.isEating ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400 animate-pulse'}`}></span>
-              <div className="font-mono-digits text-xl sm:text-2xl font-black text-amber-400 tracking-wider">
-                {String(status.hours).padStart(2, '0')}:{String(status.mins).padStart(2, '0')}:{String(status.secs).padStart(2, '0')}
-              </div>
-            </div>
-
-            {/* Meal Schedule Overlay Card */}
-            {showMealsPanel && (
-              <div className="mt-4 bg-slate-900/95 border border-slate-800 p-4 rounded-2xl shadow-2xl backdrop-blur-md max-w-md w-full animate-in fade-in">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center">
-                    <IconUtensils size={14} className="mr-1.5" /> Ventanas de Comida
-                  </span>
-                  <button onClick={() => setShowMealsPanel(false)} className="text-slate-400 hover:text-white p-1">
-                    <IconX size={16} />
-                  </button>
-                </div>
-
-                <div className="space-y-2">
-                  {meals.filter(m => m.enabled).map(meal => (
-                    <div key={meal.id} className="flex justify-between items-center bg-slate-950/80 px-3.5 py-2 rounded-xl border border-slate-800 text-xs">
-                      <span className="font-medium text-slate-200">{meal.name}</span>
-                      <span className="font-mono-digits font-bold text-amber-400">{meal.startTime} - {meal.endTime}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-          </main>
-
-          <footer className="p-2 text-center text-[10px] text-slate-700">
-            <span>•</span>
-          </footer>
-
-          {}
           {showSettings && (
-            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
-              <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden text-white flex flex-col max-h-[90vh]">
-                
-                <div className="p-5 bg-slate-950 flex justify-between items-center border-b border-slate-800">
-                  <div className="flex items-center space-x-2">
-                    <IconSettings size={20} className="text-amber-400" />
-                    <h2 className="font-bold text-base">Ajustar Intervalos de Comida</h2>
-                  </div>
-                  <button onClick={() => setShowSettings(false)} className="text-slate-400 hover:text-white p-1">
-                    <IconX size={20} />
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] flex flex-col">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-bold text-white">Horarios de Comidas</h2>
+                  <button onClick={() => setShowSettings(false)} className="p-2 text-slate-400 hover:text-white">
+                    <XIcon />
                   </button>
                 </div>
 
-                <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
-                  
-                  <div>
-                    <label className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center mb-1">
-                      <IconUtensils size={14} className="mr-1.5" />
-                      Horarios Exactos de Cada Comida
-                    </label>
-
-                    <p className="text-[11px] text-slate-400 mb-4">
-                      Define la hora de <span className="text-emerald-400 font-bold">inicio</span> y <span className="text-rose-400 font-bold">fin</span> de cada comida. El semáforo estará en <span className="text-emerald-400 font-bold">VERDE</span> únicamente dentro de estos horarios. Todo lo demás será <span className="text-rose-400 font-bold">AYUNO (ROJO)</span>.
-                    </p>
-
-                    <div className="space-y-3 mb-4">
-                      {meals.map((meal) => (
-                        <div key={meal.id} className="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              checked={meal.enabled}
-                              onChange={(e) => handleUpdateMeal(meal.id, 'enabled', e.target.checked)}
-                              className="w-4 h-4 accent-amber-400 rounded cursor-pointer"
-                            />
-
-                            <input
-                              type="text"
-                              value={meal.name}
-                              onChange={(e) => handleUpdateMeal(meal.id, 'name', e.target.value)}
-                              className="flex-1 text-xs font-bold text-slate-200 bg-transparent border-b border-transparent focus:border-slate-600 focus:outline-none px-1 py-0.5"
-                              placeholder="Nombre de la comida"
-                            />
-
-                            <button
-                              onClick={() => handleDeleteMeal(meal.id)}
-                              className="text-slate-500 hover:text-rose-400 p-1 transition-colors"
-                              title="Eliminar comida"
-                            >
-                              <IconTrash size={15} />
-                            </button>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-900">
-                            <div>
-                              <span className="text-[9px] font-bold text-emerald-400 uppercase block mb-0.5">Inicio (Verde)</span>
-                              <input
-                                type="time"
-                                value={meal.startTime}
-                                onChange={(e) => handleUpdateMeal(meal.id, 'startTime', e.target.value)}
-                                className="w-full text-sm font-bold text-amber-400 bg-slate-900 px-2 py-1.5 rounded-xl border border-slate-800 focus:outline-none font-mono-digits"
-                              />
-                            </div>
-
-                            <div>
-                              <span className="text-[9px] font-bold text-rose-400 uppercase block mb-0.5">Fin (Rojo)</span>
-                              <input
-                                type="time"
-                                value={meal.endTime}
-                                onChange={(e) => handleUpdateMeal(meal.id, 'endTime', e.target.value)}
-                                className="w-full text-sm font-bold text-amber-400 bg-slate-900 px-2 py-1.5 rounded-xl border border-slate-800 focus:outline-none font-mono-digits"
-                              />
-                            </div>
-                          </div>
-
-                        </div>
-                      ))}
-                    </div>
-
-                    <button
-                      onClick={handleAddMeal}
-                      className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-dashed border-slate-700 flex items-center justify-center space-x-1.5 transition-colors mb-6"
-                    >
-                      <IconPlus size={14} />
-                      <span>Añadir Otra Comida</span>
-                    </button>
-
-                    {/* Presets */}
-                    <div>
-                      <label className="text-xs font-bold text-slate-300 block mb-2 flex items-center">
-                        <IconZap size={14} className="mr-1 text-amber-400" />
-                        Plantillas Predefinidas:
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => handlePreset('3_meals')}
-                          className="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 font-semibold text-slate-200 rounded-xl transition-colors text-left border border-slate-700"
-                        >
-                          3 Comidas Estándar
-                        </button>
-                        <button
-                          onClick={() => handlePreset('2_meals')}
-                          className="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 font-semibold text-slate-200 rounded-xl transition-colors text-left border border-slate-700"
-                        >
-                          2 Comidas (16:8)
-                        </button>
-                        <button
-                          onClick={() => handlePreset('omad')}
-                          className="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 font-semibold text-slate-200 rounded-xl transition-colors text-left border border-slate-700"
-                        >
-                          1 Comida (OMAD)
-                        </button>
-                        <button
-                          onClick={() => handlePreset('4_meals')}
-                          className="text-xs py-2 px-3 bg-slate-800 hover:bg-slate-700 font-semibold text-slate-200 rounded-xl transition-colors text-left border border-slate-700"
-                        >
-                          4 Ventanas Ligeras
-                        </button>
-                      </div>
-                    </div>
-
-                  </div>
-
-                </div>
-
-                <div className="p-4 bg-slate-950 border-t border-slate-800">
-                  <button
-                    onClick={() => setShowSettings(false)}
-                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg text-sm"
-                  >
-                    Guardar y Aplicar
-                  </button>
-                </div>
-
-              </div>
-            </div>
-          )}
-
-        </div>
-      );
-    }
-
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
-  </script>
-</body>
-</html>
+                <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+                  {meals.map((meal, index) => (
+                    <div key={meal.id} className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <input
+                          type="text"
+                          value={meal.name}
+                          onChange={(e) => handleMealChange(index, 'name', e.target.value)}
+                          className="bg-transparent font-semibold text-white focus:outline-none border-b border-transparent focus:border-emerald-500"
+                        />
+                        {

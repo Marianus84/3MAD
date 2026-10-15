@@ -32,6 +32,11 @@
     </button>
   </div>
 
+  <!-- EMOJIS (A medio camino entre la parte superior y la parte alta del semáforo) -->
+  <div class="absolute top-16 sm:top-20 left-0 right-0 flex justify-center z-20">
+    <span id="emoji-display" class="text-2xl sm:text-3xl tracking-widest">🐔🔒</span>
+  </div>
+
   <!-- SEMÁFORO VERTICAL (EXACTAMENTE EN EL CENTRO DE LA PANTALLA) -->
   <div class="flex flex-col items-center justify-center my-auto z-10">
     <div class="w-40 sm:w-48 bg-zinc-950 p-4 sm:p-5 rounded-[3rem] border-4 border-zinc-900 shadow-2xl flex flex-col items-center space-y-4 sm:space-y-6">
@@ -107,6 +112,7 @@
 
     const mainBg = document.getElementById('main-bg');
     const topBar = document.getElementById('top-bar');
+    const emojiDisplay = document.getElementById('emoji-display');
     const redBulb = document.getElementById('red-bulb');
     const yellowBulb = document.getElementById('yellow-bulb');
     const greenBulb = document.getElementById('green-bulb');
@@ -191,6 +197,7 @@
         redBulb.className = BULB_ON_RED;
         yellowBulb.className = BULB_OFF_YELLOW;
         greenBulb.className = BULB_OFF_GREEN;
+        emojiDisplay.textContent = '🐔🔒';
 
         const totalSecs = Math.floor((parseInt(forcedFastUntil) - currentMs) / 1000);
         timerDisplay.textContent = formatSeconds(totalSecs);
@@ -234,6 +241,7 @@
       if (activeMeal) {
         const remainingSecs = (activeMeal.endMins - currentMinutes) * 60 - currentSeconds;
         timerDisplay.textContent = formatSeconds(remainingSecs);
+        emojiDisplay.textContent = '🐔🔓';
 
         if (remainingSecs <= 900) { // Quedan 15 min o menos (transición de Verde a Rojo)
           // MODO AMARILLO
@@ -251,6 +259,7 @@
         redBulb.className = BULB_ON_RED;
         yellowBulb.className = BULB_OFF_YELLOW;
         greenBulb.className = BULB_OFF_GREEN;
+        emojiDisplay.textContent = '🐔🔒';
 
         const totalSecs = (minMinutesToNext === Infinity ? 0 : minMinutesToNext * 60) - currentSeconds;
         timerDisplay.textContent = formatSeconds(totalSecs);

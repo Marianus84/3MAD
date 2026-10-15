@@ -44,8 +44,8 @@
     </div>
   </div>
 
-  <!-- TEMPORIZADOR COMPACTO (Flotante abajo) -->
-  <div class="absolute bottom-6 sm:bottom-10 left-0 right-0 flex justify-center z-20">
+  <!-- TEMPORIZADOR COMPACTO (A medio camino entre la parte baja del semáforo y la parte más baja de la pantalla) -->
+  <div class="absolute bottom-16 sm:bottom-20 left-0 right-0 flex justify-center z-20">
     <div class="bg-zinc-950 border border-zinc-900/90 backdrop-blur-md px-3.5 py-1 rounded-full shadow-xl flex items-center justify-center">
       <span id="timer-display" class="font-mono text-sm sm:text-base font-bold tracking-wider text-zinc-300">00:00:00</span>
     </div>
@@ -425,7 +425,7 @@
     document.getElementById('close-list').onclick = () => modalList.classList.add('hidden');
     document.getElementById('btn-close-program').onclick = () => modalList.classList.add('hidden');
 
-    // MODO MAXIMIZAR (Oculta botones superiores al estar en pantalla completa)
+    // MODO MAXIMIZAR
     document.getElementById('btn-fullscreen').onclick = () => {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
@@ -434,7 +434,11 @@
       }
     };
 
+    let exitClickCount = 0;
+    let exitClickTimer = null;
+
     document.addEventListener('fullscreenchange', () => {
+      exitClickCount = 0;
       if (document.fullscreenElement) {
         topBar.classList.add('hidden');
       } else {
@@ -442,14 +446,24 @@
       }
     });
 
-    // Tocar la pantalla en modo maximizado para salir de pantalla completa (evitando salir si fue la pulsación de 3s)
+    // SALIR DE PANTALLA COMPLETA HACIENDO CLICK 5 VECES
     document.body.addEventListener('click', (e) => {
       if (wasHoldTriggered) {
         wasHoldTriggered = false;
+        exitClickCount = 0;
         return;
       }
       if (document.fullscreenElement && !e.target.closest('#modal-settings') && !e.target.closest('#modal-list') && !e.target.closest('#top-bar')) {
-        document.exitFullscreen().catch(() => {});
+        exitClickCount++;
+        clearTimeout(exitClickTimer);
+        exitClickTimer = setTimeout(() => {
+          exitClickCount = 0;
+        }, 2500);
+
+        if (exitClickCount >= 5) {
+          exitClickCount = 0;
+          document.exitFullscreen().catch(() => {});
+        }
       }
     });
 

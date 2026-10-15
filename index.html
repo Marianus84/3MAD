@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col items-center justify-center relative p-4 sm:p-6" id="main-bg">
+<body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col items-center justify-center relative p-4 sm:p-6 transition-all duration-1000" id="main-bg">
 
   <!-- BARRA SUPERIOR DE BOTONES (Flotante arriba, se oculta al maximizar) -->
   <div id="top-bar" class="absolute top-4 sm:top-6 left-4 right-4 max-w-sm mx-auto flex justify-between items-center z-20 transition-opacity duration-300">
@@ -105,6 +105,7 @@
       days: Array.isArray(m.days) && m.days.length > 0 ? m.days : [...ALL_DAYS]
     }));
 
+    const mainBg = document.getElementById('main-bg');
     const topBar = document.getElementById('top-bar');
     const redBulb = document.getElementById('red-bulb');
     const yellowBulb = document.getElementById('yellow-bulb');
@@ -172,6 +173,16 @@
 
     function updateApp() {
       const now = new Date();
+      const currentHour = now.getHours();
+      
+      // ATENUACIÓN NOCTURNA (23:00 a 07:00)
+      const isNight = (currentHour >= 23 || currentHour < 7);
+      if (isNight) {
+        mainBg.classList.add('opacity-30');
+      } else {
+        mainBg.classList.remove('opacity-30');
+      }
+
       const currentMs = now.getTime();
       const forcedFastUntil = localStorage.getItem('plan3mad_forced_fast_until');
 
@@ -189,7 +200,7 @@
       }
 
       const currentDay = now.getDay();
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const currentMinutes = currentHour * 60 + now.getMinutes();
       const currentSeconds = now.getSeconds();
 
       let activeMeal = null;
@@ -224,7 +235,7 @@
         const remainingSecs = (activeMeal.endMins - currentMinutes) * 60 - currentSeconds;
         timerDisplay.textContent = formatSeconds(remainingSecs);
 
-        if (remainingSecs <= 900) { // Quedan 15 min o menos (900 segundos)
+        if (remainingSecs <= 900) { // Quedan 15 min o menos (transición de Verde a Rojo)
           // MODO AMARILLO
           redBulb.className = BULB_OFF_RED;
           yellowBulb.className = BULB_ON_YELLOW;

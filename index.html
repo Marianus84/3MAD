@@ -12,6 +12,15 @@
 </head>
 <body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col items-center justify-center relative p-4 sm:p-6 transition-all duration-1000" id="main-bg">
 
+  <!-- PANTALLA DE INICIO (Obligatoria para desbloquear vibración en Android) -->
+  <div id="interaction-unlock-overlay" class="fixed inset-0 z-[100] bg-zinc-950 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-500">
+    <div class="w-24 h-24 bg-zinc-900 rounded-full flex items-center justify-center mb-6 animate-pulse shadow-[0_0_50px_rgba(255,255,255,0.1)]">
+      <span class="text-5xl">📳</span>
+    </div>
+    <h2 class="text-2xl font-bold text-white mb-2">Toca para Iniciar</h2>
+    <p class="text-zinc-500 text-sm text-center max-w-xs">Necesario para autorizar la vibración automática del navegador.</p>
+  </div>
+
   <!-- BARRA SUPERIOR DE BOTONES (Flotante arriba, se oculta al maximizar) -->
   <div id="top-bar" class="absolute top-4 sm:top-6 left-4 right-4 max-w-sm mx-auto flex justify-between items-center z-20 transition-opacity duration-300">
     <button id="btn-settings" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
@@ -128,9 +137,18 @@
       navigator.wakeLock.request('screen').catch(() => {});
     }
 
-    // --- NUEVO: SISTEMA DE VIBRACIÓN POR ESTADOS ---
+    // --- NUEVO: SISTEMA DE VIBRACIÓN POR ESTADOS A PRUEBA DE FALLOS ---
     let previousState = null;
+    let isFirstRun = true; // Evita que vibre nada más abrir la app
+    
     function checkTransition(newState) {
+      // Si es la primera vez que calcula la hora (al cargar la web), no vibramos
+      if (isFirstRun) {
+        previousState = newState;
+        isFirstRun = false;
+        return;
+      }
+
       if (previousState !== null && previousState !== newState) {
         if (previousState === 'RED' && newState === 'GREEN') {
           // De rojo a verde vibra una vez
@@ -408,7 +426,7 @@
     let wasHoldTriggered = false;
 
     function startHold(e) {
-      if (e.target.closest('#modal-settings') || e.target.closest('#modal-list') || e.target.closest('#top-bar')) return;
+      if (e.target.closest('#modal-settings') || e.target.closest('#modal-list') || e.target.closest('#top-bar') || e.target.closest('#interaction-unlock-overlay')) return;
       wasHoldTriggered = false;
       clearTimeout(holdTimer);
       holdTimer = setTimeout(() => {
@@ -420,7 +438,7 @@
           const targetTs = getFirstMealOfNextDayTimestamp();
           localStorage.setItem('plan3mad_forced_fast_until', targetTs);
         }
-        if (navigator.vibrate) navigator.vibrate(200); // Esto es la confirmación del gesto
+        if (navigator.vibrate) navigator.vibrate(200); // Vibración confirmando el toque mantenido
         updateApp();
       }, 3000);
     }
@@ -502,8 +520,26 @@
       }
     });
 
-    setInterval(updateApp, 1000);
-    updateApp();
+    // DESBLOQUEO DE VIBRACIÓN (BOTÓN INICIAL)
+    const overlay = document.getElementById('interaction-unlock-overlay');
+    let interactionUnlocked = false;
+
+    function hideOverlayAndStart(e) {
+      if (interactionUnlocked) return;
+      interactionUnlocked = true;
+      if (e) e.preventDefault();
+
+      overlay.style.display = 'none';
+
+      // Micro-vibración silenciosa de 1ms para forzar al navegador a registrar el permiso
+      if (navigator.vibrate) navigator.vibrate(1);
+
+      updateApp();
+      setInterval(updateApp, 1000);
+    }
+
+    overlay.addEventListener('touchstart', hideOverlayAndStart, { passive: false });
+    overlay.addEventListener('click', hideOverlayAndStart);
   </script>
 </body>
 </html>

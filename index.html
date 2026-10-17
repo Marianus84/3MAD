@@ -12,16 +12,9 @@
 </head>
 <body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col items-center justify-center relative p-4 sm:p-6 transition-all duration-1000" id="main-bg">
 
-  <!-- AUDIOS INCORPORADOS (Base64 para funcionar offline) -->
-  <audio id="audio-rooster" preload="auto">
-    <!-- Canto de gallo sutil (Apertura de ventana) -->
-    <source type="audio/mp3" src="data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq">
-  </audio>
-  <audio id="audio-chicken" preload="auto">
-    <!-- Cacareo de gallina sutil (Cierre de ventana) -->
-    <source type="audio/mp3" src="data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq">
-  </audio>
-  <!-- Fin de audios -->
+  <!-- AUDIOS VINCULADOS A LOS ARCHIVOS MP3 (Súbelos a tu GitHub) -->
+  <audio id="audio-rooster" src="gallo.mp3" preload="auto"></audio>
+  <audio id="audio-chicken" src="gallina.mp3" preload="auto"></audio>
 
   <!-- BARRA SUPERIOR DE BOTONES (Flotante arriba, se oculta al maximizar) -->
   <div id="top-bar" class="absolute top-4 sm:top-6 left-4 right-4 max-w-sm mx-auto flex justify-between items-center z-20 transition-opacity duration-300">
@@ -143,6 +136,33 @@
       navigator.wakeLock.request('screen').catch(() => {});
     }
 
+    // DESBLOQUEAR AUDIO EN EL PRIMER TOQUE (Política de navegadores)
+    let audioUnlocked = false;
+    function unlockAudio() {
+      if (audioUnlocked) return;
+      
+      // Reproducir y pausar instantáneamente en silencio para autorizar el audio
+      audioRooster.volume = 0;
+      audioRooster.play().then(() => {
+        audioRooster.pause();
+        audioRooster.currentTime = 0;
+        audioRooster.volume = 1;
+      }).catch(()=>{});
+
+      audioChicken.volume = 0;
+      audioChicken.play().then(() => {
+        audioChicken.pause();
+        audioChicken.currentTime = 0;
+        audioChicken.volume = 1;
+      }).catch(()=>{});
+
+      audioUnlocked = true;
+      document.removeEventListener('touchstart', unlockAudio);
+      document.removeEventListener('click', unlockAudio);
+    }
+    document.addEventListener('touchstart', unlockAudio, { passive: true });
+    document.addEventListener('click', unlockAudio);
+
     function saveMeals() {
       localStorage.setItem('plan3mad_meal_slots', JSON.stringify(meals));
     }
@@ -212,7 +232,7 @@
 
       // AYUNO FORZADO (PULSACIÓN DE 3 SEGUNDOS)
       if (forcedFastUntil && currentMs < parseInt(forcedFastUntil)) {
-        setTrafficLightState('RED', currentMs);
+        setTrafficLightState('RED');
         const totalSecs = Math.floor((parseInt(forcedFastUntil) - currentMs) / 1000);
         timerDisplay.textContent = formatSeconds(totalSecs);
         return;
@@ -257,27 +277,31 @@
         timerDisplay.textContent = formatSeconds(remainingSecs);
 
         if (remainingSecs <= 900) { // Quedan 15 min o menos (transición de Verde a Rojo)
-          setTrafficLightState('YELLOW', currentMs);
+          setTrafficLightState('YELLOW');
         } else {
-          setTrafficLightState('GREEN', currentMs);
+          setTrafficLightState('GREEN');
         }
       } else {
         const totalSecs = (minMinutesToNext === Infinity ? 0 : minMinutesToNext * 60) - currentSeconds;
         timerDisplay.textContent = formatSeconds(totalSecs);
-        setTrafficLightState('RED', currentMs);
+        setTrafficLightState('RED');
       }
     }
 
-    function setTrafficLightState(newState, currentMs) {
-      // Si el estado cambia a Verde desde Rojo
+    function setTrafficLightState(newState) {
+      // Reproducir sonido de Gallo al abrir ventana (Cambio de Rojo a Verde)
       if (newState === 'GREEN' && previousState === 'RED') {
-        audioRooster.currentTime = 0;
-        audioRooster.play().catch(()=>{});
+        if (audioUnlocked) {
+          audioRooster.currentTime = 0;
+          audioRooster.play().catch(()=>{});
+        }
       }
-      // Si el estado cambia a Rojo desde Verde o Amarillo
+      // Reproducir sonido de Gallina al cerrar ventana (Cambio de Verde o Amarillo a Rojo)
       else if (newState === 'RED' && (previousState === 'GREEN' || previousState === 'YELLOW')) {
-        audioChicken.currentTime = 0;
-        audioChicken.play().catch(()=>{});
+        if (audioUnlocked) {
+          audioChicken.currentTime = 0;
+          audioChicken.play().catch(()=>{});
+        }
       }
 
       previousState = newState;
@@ -426,12 +450,11 @@
         const existingForced = localStorage.getItem('plan3mad_forced_fast_until');
         if (existingForced && parseInt(existingForced) > Date.now()) {
           localStorage.removeItem('plan3mad_forced_fast_until');
-          // Forzar refresco de estado para que suene
           previousState = 'RED'; 
         } else {
           const targetTs = getFirstMealOfNextDayTimestamp();
           localStorage.setItem('plan3mad_forced_fast_until', targetTs);
-          previousState = 'GREEN'; // Forzar que suene el cierre
+          previousState = 'GREEN'; 
         }
         if (navigator.vibrate) navigator.vibrate(200);
         updateApp();
@@ -496,12 +519,6 @@
 
     // SALIR DE PANTALLA COMPLETA HACIENDO CLICK 5 VECES
     document.body.addEventListener('click', (e) => {
-      // Habilitar audio en navegadores móviles al hacer el primer clic en la pantalla
-      if(audioRooster.paused && audioChicken.paused) {
-         audioRooster.load();
-         audioChicken.load();
-      }
-
       if (wasHoldTriggered) {
         wasHoldTriggered = false;
         exitClickCount = 0;
@@ -523,7 +540,7 @@
 
     setInterval(updateApp, 1000);
     
-    // Inicialización de estado para que no suene nada al cargar la app
+    // Inicialización de estado para que no suene nada al cargar la app por primera vez
     const nowInit = new Date();
     const currentMinsInit = nowInit.getHours() * 60 + nowInit.getMinutes();
     let isEatingInit = false;

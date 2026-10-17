@@ -10,62 +10,53 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col items-center justify-center relative p-4 sm:p-6 transition-all duration-1000" id="main-bg">
 
-  <!-- PANTALLA DE INICIO (Obligatoria para desbloquear vibración en Android) -->
-  <div id="interaction-unlock-overlay" class="fixed inset-0 z-[100] bg-zinc-950 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-500">
-    <div class="w-24 h-24 bg-zinc-900 rounded-full flex items-center justify-center mb-6 animate-pulse shadow-[0_0_50px_rgba(255,255,255,0.1)]">
-      <span class="text-5xl">📳</span>
-    </div>
-    <h2 class="text-2xl font-bold text-white mb-2">Toca para Iniciar</h2>
-    <p class="text-zinc-500 text-sm text-center max-w-xs">Necesario para autorizar la vibración automática del navegador.</p>
-  </div>
-
-  <!-- BARRA SUPERIOR DE BOTONES (Flotante arriba, se oculta al maximizar) -->
+  <!-- BARRA SUPERIOR -->
   <div id="top-bar" class="absolute top-4 sm:top-6 left-4 right-4 max-w-sm mx-auto flex justify-between items-center z-20 transition-opacity duration-300">
     <button id="btn-settings" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
       <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
       </svg>
     </button>
+
     <button id="btn-list" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
       <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
       </svg>
     </button>
+
     <button id="btn-fullscreen" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
       <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
       </svg>
     </button>
   </div>
 
-  <!-- EMOJIS (A medio camino entre la parte superior y la parte alta del semáforo) -->
+  <!-- EMOJIS -->
   <div class="absolute top-16 sm:top-20 left-0 right-0 flex justify-center z-20">
     <span id="emoji-display" class="text-2xl sm:text-3xl tracking-widest">🐔🔒</span>
   </div>
 
-  <!-- SEMÁFORO VERTICAL (EXACTAMENTE EN EL CENTRO DE LA PANTALLA) -->
+  <!-- SEMÁFORO -->
   <div class="flex flex-col items-center justify-center my-auto z-10">
     <div class="w-40 sm:w-48 bg-zinc-950 p-4 sm:p-5 rounded-[3rem] border-4 border-zinc-900 shadow-2xl flex flex-col items-center space-y-4 sm:space-y-6">
-      <!-- FOCO ROJO -->
       <div id="red-bulb" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700"></div>
-      <!-- FOCO AMARILLO -->
       <div id="yellow-bulb" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700"></div>
-      <!-- FOCO VERDE -->
       <div id="green-bulb" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700"></div>
     </div>
   </div>
 
-  <!-- TEMPORIZADOR COMPACTO (A medio camino entre la parte baja del semáforo y la parte más baja de la pantalla) -->
+  <!-- TEMPORIZADOR -->
   <div class="absolute bottom-16 sm:bottom-20 left-0 right-0 flex justify-center z-20">
     <div class="bg-zinc-950 border border-zinc-900/90 backdrop-blur-md px-3.5 py-1 rounded-full shadow-xl flex items-center justify-center">
       <span id="timer-display" class="font-mono text-sm sm:text-base font-bold tracking-wider text-zinc-300">00:00:00</span>
     </div>
   </div>
 
-  <!-- MODAL DE CONFIGURACIÓN DE HORARIOS -->
+  <!-- CONFIGURACIÓN DE COMIDAS -->
   <div id="modal-settings" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-950 border border-zinc-900 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] flex flex-col">
       <div class="flex justify-between items-center mb-6">
@@ -86,7 +77,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE VER PROGRAMA -->
+  <!-- PROGRAMA DE COMIDAS -->
   <div id="modal-list" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-950 border border-zinc-900 rounded-3xl w-full max-w-sm p-6 shadow-2xl">
       <div class="flex justify-between items-center mb-6">
@@ -98,12 +89,17 @@
     </div>
   </div>
 
-  <!-- SCRIPT LÓGICA VANILLA JS -->
   <script>
-    const ALL_DAYS = [1, 2, 3, 4, 5, 6, 0]; // 1=Lunes ... 0=Domingo
+    const ALL_DAYS = [1, 2, 3, 4, 5, 6, 0];
+
     const DAYS_MAP = [
-      { d: 1, l: 'L' }, { d: 2, l: 'M' }, { d: 3, l: 'X' },
-      { d: 4, l: 'J' }, { d: 5, l: 'V' }, { d: 6, l: 'S' }, { d: 0, l: 'D' }
+      { d: 1, l: 'L' },
+      { d: 2, l: 'M' },
+      { d: 3, l: 'X' },
+      { d: 4, l: 'J' },
+      { d: 5, l: 'V' },
+      { d: 6, l: 'S' },
+      { d: 0, l: 'D' }
     ];
 
     const defaultMeals = [
@@ -132,36 +128,9 @@
     const mealsContainer = document.getElementById('meals-container');
     const programList = document.getElementById('program-list');
 
-    // MANTENER PANTALLA ENCENDIDA
+    // Mantener la pantalla encendida cuando el navegador lo permita
     if ('wakeLock' in navigator) {
       navigator.wakeLock.request('screen').catch(() => {});
-    }
-
-    // --- NUEVO: SISTEMA DE VIBRACIÓN POR ESTADOS A PRUEBA DE FALLOS ---
-    let previousState = null;
-    let isFirstRun = true; // Evita que vibre nada más abrir la app
-    
-    function checkTransition(newState) {
-      // Si es la primera vez que calcula la hora (al cargar la web), no vibramos
-      if (isFirstRun) {
-        previousState = newState;
-        isFirstRun = false;
-        return;
-      }
-
-      if (previousState !== null && previousState !== newState) {
-        if (previousState === 'RED' && newState === 'GREEN') {
-          // De rojo a verde vibra una vez
-          if (navigator.vibrate) navigator.vibrate(250);
-        } else if (previousState === 'GREEN' && newState === 'YELLOW') {
-          // De verde a amarillo vibra 2 veces (250ms encendido, 150ms apagado, 250ms encendido)
-          if (navigator.vibrate) navigator.vibrate([250, 150, 250]);
-        } else if ((previousState === 'YELLOW' || previousState === 'GREEN') && newState === 'RED') {
-          // De amarillo a rojo vibra 3 veces
-          if (navigator.vibrate) navigator.vibrate([250, 150, 250, 150, 250]);
-        }
-      }
-      previousState = newState;
     }
 
     function saveMeals() {
@@ -169,56 +138,162 @@
     }
 
     function getMealDays(meal) {
-      return Array.isArray(meal.days) && meal.days.length > 0 ? meal.days : ALL_DAYS;
+      return Array.isArray(meal.days) && meal.days.length > 0
+        ? meal.days
+        : ALL_DAYS;
     }
 
     function formatSeconds(totalSecs) {
       if (totalSecs < 0) return '00:00:00';
+
       const h = Math.floor(totalSecs / 3600);
       const m = Math.floor((totalSecs % 3600) / 60);
       const s = totalSecs % 60;
-      return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
+
+      return [h, m, s]
+        .map(v => String(v).padStart(2, '0'))
+        .join(':');
     }
 
     function getFirstMealOfNextDayTimestamp() {
       const now = new Date();
+
       for (let offset = 1; offset <= 7; offset++) {
         const checkDate = new Date(now);
         checkDate.setDate(now.getDate() + offset);
-        const checkDay = checkDate.getDay();
 
-        const dayMeals = meals.filter(m => getMealDays(m).includes(checkDay));
+        const checkDay = checkDate.getDay();
+        const dayMeals = meals.filter(m =>
+          getMealDays(m).includes(checkDay)
+        );
+
         if (dayMeals.length > 0) {
           dayMeals.sort((a, b) => {
             const [aH, aM] = a.start.split(':').map(Number);
             const [bH, bM] = b.start.split(':').map(Number);
+
             return (aH * 60 + aM) - (bH * 60 + bM);
           });
 
           const firstMeal = dayMeals[0];
           const [fH, fM] = firstMeal.start.split(':').map(Number);
+
           checkDate.setHours(fH, fM, 0, 0);
           return checkDate.getTime();
         }
       }
+
       return now.getTime() + 24 * 3600 * 1000;
     }
 
-    // Estilos de focos encendidos y apagados (Tamaño Grande)
-    const BULB_OFF_RED = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-rose-950/20 opacity-20 border border-rose-900/20';
-    const BULB_OFF_YELLOW = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-amber-950/20 opacity-20 border border-amber-900/20';
-    const BULB_OFF_GREEN = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-emerald-950/20 opacity-20 border border-emerald-900/20';
+    // Estilos de los focos apagados
+    const BULB_OFF_RED =
+      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-rose-950/20 opacity-20 border border-rose-900/20';
 
-    const BULB_ON_RED = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_90px_rgba(244,63,94,0.9)] scale-105';
-    const BULB_ON_YELLOW = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-amber-400 shadow-[0_0_90px_rgba(251,191,36,0.9)] scale-105';
-    const BULB_ON_GREEN = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-emerald-500 shadow-[0_0_90px_rgba(16,185,129,0.9)] scale-105';
+    const BULB_OFF_YELLOW =
+      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-amber-950/20 opacity-20 border border-amber-900/20';
+
+    const BULB_OFF_GREEN =
+      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-emerald-950/20 opacity-20 border border-emerald-900/20';
+
+    // Estilos de los focos encendidos
+    const BULB_ON_RED =
+      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_90px_rgba(244,63,94,0.9)] scale-105';
+
+    const BULB_ON_YELLOW =
+      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-amber-400 shadow-[0_0_90px_rgba(251,191,36,0.9)] scale-105';
+
+    const BULB_ON_GREEN =
+      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-emerald-500 shadow-[0_0_90px_rgba(16,185,129,0.9)] scale-105';
+
+    // -------------------------------------------------------
+    // VIBRACIÓN POR CAMBIO DE COLOR
+    // Rojo -> Verde: 1 vibración
+    // Verde -> Amarillo: 2 vibraciones
+    // Amarillo -> Rojo: 3 vibraciones
+    // -------------------------------------------------------
+
+    let previousTrafficState = null;
+
+    function getTrafficState() {
+      const now = new Date();
+
+      const forcedFastUntil = localStorage.getItem(
+        'plan3mad_forced_fast_until'
+      );
+
+      if (
+        forcedFastUntil &&
+        now.getTime() < parseInt(forcedFastUntil)
+      ) {
+        return 'red';
+      }
+
+      const currentDay = now.getDay();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      let activeMeal = null;
+
+      meals.forEach(meal => {
+        const mealDays = getMealDays(meal);
+        const [sH, sM] = meal.start.split(':').map(Number);
+        const [eH, eM] = meal.end.split(':').map(Number);
+
+        const startMins = sH * 60 + sM;
+        const endMins = eH * 60 + eM;
+
+        if (
+          mealDays.includes(currentDay) &&
+          currentMinutes >= startMins &&
+          currentMinutes < endMins
+        ) {
+          activeMeal = { ...meal, endMins };
+        }
+      });
+
+      if (!activeMeal) return 'red';
+
+      const remainingSecs =
+        (activeMeal.endMins - currentMinutes) * 60 -
+        now.getSeconds();
+
+      return remainingSecs <= 900 ? 'yellow' : 'green';
+    }
+
+    function vibrateForTransition(nextState) {
+      if (
+        previousTrafficState === null ||
+        previousTrafficState === nextState
+      ) {
+        return;
+      }
+
+      const vibrationPatterns = {
+        'red-green': [200],
+        'green-yellow': [200, 120, 200],
+        'yellow-red': [200, 120, 200, 120, 200]
+      };
+
+      const pattern =
+        vibrationPatterns[`${previousTrafficState}-${nextState}`];
+
+      if (pattern && 'vibrate' in navigator) {
+        navigator.vibrate(pattern);
+      }
+    }
 
     function updateApp() {
       const now = new Date();
+
+      const nextTrafficState = getTrafficState();
+      vibrateForTransition(nextTrafficState);
+      previousTrafficState = nextTrafficState;
+
       const currentHour = now.getHours();
-      
-      // ATENUACIÓN NOCTURNA (23:00 a 07:00)
-      const isNight = (currentHour >= 23 || currentHour < 7);
+
+      // Atenuación nocturna: 23:00 a 07:00
+      const isNight = currentHour >= 23 || currentHour < 7;
+
       if (isNight) {
         mainBg.classList.add('opacity-30');
       } else {
@@ -226,18 +301,24 @@
       }
 
       const currentMs = now.getTime();
-      const forcedFastUntil = localStorage.getItem('plan3mad_forced_fast_until');
+      const forcedFastUntil = localStorage.getItem(
+        'plan3mad_forced_fast_until'
+      );
 
-      // AYUNO FORZADO (PULSACIÓN DE 3 SEGUNDOS)
-      if (forcedFastUntil && currentMs < parseInt(forcedFastUntil)) {
+      // Ayuno forzado mediante pulsación de 3 segundos
+      if (
+        forcedFastUntil &&
+        currentMs < parseInt(forcedFastUntil)
+      ) {
         redBulb.className = BULB_ON_RED;
         yellowBulb.className = BULB_OFF_YELLOW;
         greenBulb.className = BULB_OFF_GREEN;
         emojiDisplay.textContent = '🐔🔒';
-        
-        checkTransition('RED'); // <-- Verificar vibración
 
-        const totalSecs = Math.floor((parseInt(forcedFastUntil) - currentMs) / 1000);
+        const totalSecs = Math.floor(
+          (parseInt(forcedFastUntil) - currentMs) / 1000
+        );
+
         timerDisplay.textContent = formatSeconds(totalSecs);
         return;
       } else if (forcedFastUntil) {
@@ -245,7 +326,8 @@
       }
 
       const currentDay = now.getDay();
-      const currentMinutes = currentHour * 60 + now.getMinutes();
+      const currentMinutes =
+        currentHour * 60 + now.getMinutes();
       const currentSeconds = now.getSeconds();
 
       let activeMeal = null;
@@ -255,17 +337,25 @@
         const mealDays = getMealDays(meal);
         const [sH, sM] = meal.start.split(':').map(Number);
         const [eH, eM] = meal.end.split(':').map(Number);
+
         const startMins = sH * 60 + sM;
         const endMins = eH * 60 + eM;
 
-        if (mealDays.includes(currentDay) && currentMinutes >= startMins && currentMinutes < endMins) {
+        if (
+          mealDays.includes(currentDay) &&
+          currentMinutes >= startMins &&
+          currentMinutes < endMins
+        ) {
           activeMeal = { ...meal, endMins };
         }
 
         for (let offset = 0; offset < 7; offset++) {
           const checkDay = (currentDay + offset) % 7;
+
           if (mealDays.includes(checkDay)) {
-            let diff = (offset * 1440) + startMins - currentMinutes;
+            const diff =
+              offset * 1440 + startMins - currentMinutes;
+
             if (diff > 0) {
               if (diff < minMinutesToNext) {
                 minMinutesToNext = diff;
@@ -277,54 +367,59 @@
       });
 
       if (activeMeal) {
-        const remainingSecs = (activeMeal.endMins - currentMinutes) * 60 - currentSeconds;
+        const remainingSecs =
+          (activeMeal.endMins - currentMinutes) * 60 -
+          currentSeconds;
+
         timerDisplay.textContent = formatSeconds(remainingSecs);
         emojiDisplay.textContent = '🐔🔓';
 
-        if (remainingSecs <= 900) { // Quedan 15 min o menos (transición de Verde a Rojo)
-          // MODO AMARILLO
+        if (remainingSecs <= 900) {
+          // Amarillo: quedan 15 minutos o menos
           redBulb.className = BULB_OFF_RED;
           yellowBulb.className = BULB_ON_YELLOW;
           greenBulb.className = BULB_OFF_GREEN;
-          
-          checkTransition('YELLOW'); // <-- Verificar vibración
         } else {
-          // MODO VERDE
+          // Verde: ventana de comida abierta
           redBulb.className = BULB_OFF_RED;
           yellowBulb.className = BULB_OFF_YELLOW;
           greenBulb.className = BULB_ON_GREEN;
-          
-          checkTransition('GREEN'); // <-- Verificar vibración
         }
       } else {
-        // MODO AYUNO (ROJO)
+        // Rojo: ayuno
         redBulb.className = BULB_ON_RED;
         yellowBulb.className = BULB_OFF_YELLOW;
         greenBulb.className = BULB_OFF_GREEN;
         emojiDisplay.textContent = '🐔🔒';
 
-        const totalSecs = (minMinutesToNext === Infinity ? 0 : minMinutesToNext * 60) - currentSeconds;
+        const totalSecs =
+          (minMinutesToNext === Infinity
+            ? 0
+            : minMinutesToNext * 60) - currentSeconds;
+
         timerDisplay.textContent = formatSeconds(totalSecs);
-        
-        checkTransition('RED'); // <-- Verificar vibración
       }
     }
 
+    // CONFIGURACIÓN DE COMIDAS
     function renderSettings() {
       mealsContainer.innerHTML = '';
+
       meals.forEach((meal, index) => {
         const mDays = getMealDays(meal);
 
         const daysButtonsHtml = DAYS_MAP.map(dayObj => {
           const isActive = mDays.includes(dayObj.d);
-          const bgClass = isActive 
-            ? 'bg-emerald-600 text-white font-bold border-emerald-500' 
+
+          const bgClass = isActive
+            ? 'bg-emerald-600 text-white font-bold border-emerald-500'
             : 'bg-black text-zinc-600 border-zinc-800 hover:text-zinc-400';
+
           return `
-            <button 
-              type="button" 
-              data-meal-index="${index}" 
-              data-day="${dayObj.d}" 
+            <button
+              type="button"
+              data-meal-index="${index}"
+              data-day="${dayObj.d}"
               class="btn-day-toggle w-8 h-8 text-xs rounded-xl border transition-all ${bgClass}">
               ${dayObj.l}
             </button>
@@ -332,21 +427,40 @@
         }).join('');
 
         const item = document.createElement('div');
-        item.className = 'bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800 space-y-3';
+
+        item.className =
+          'bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800 space-y-3';
+
         item.innerHTML = `
           <div class="flex justify-between items-center">
-            <input type="text" value="${meal.name}" data-index="${index}" class="meal-name-input bg-transparent font-semibold text-white focus:outline-none border-b border-transparent focus:border-emerald-500" />
-            ${meals.length > 1 ? `<button data-index="${index}" class="btn-delete-meal text-rose-400 text-xs font-bold hover:text-rose-300">Eliminar</button>` : ''}
+            <input
+              type="text"
+              value="${meal.name}"
+              data-index="${index}"
+              class="meal-name-input bg-transparent font-semibold text-white focus:outline-none border-b border-transparent focus:border-emerald-500" />
+
+            ${meals.length > 1
+              ? `<button data-index="${index}" class="btn-delete-meal text-rose-400 text-xs font-bold hover:text-rose-300">Eliminar</button>`
+              : ''}
           </div>
-          
+
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
               <label class="text-zinc-400 text-xs block mb-1">Inicio</label>
-              <input type="time" value="${meal.start}" data-index="${index}" class="meal-start-input w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono" />
+              <input
+                type="time"
+                value="${meal.start}"
+                data-index="${index}"
+                class="meal-start-input w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono" />
             </div>
+
             <div>
               <label class="text-zinc-400 text-xs block mb-1">Fin</label>
-              <input type="time" value="${meal.end}" data-index="${index}" class="meal-end-input w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono" />
+              <input
+                type="time"
+                value="${meal.end}"
+                data-index="${index}"
+                class="meal-end-input w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono" />
             </div>
           </div>
 
@@ -357,23 +471,33 @@
             </div>
           </div>
         `;
+
         mealsContainer.appendChild(item);
       });
 
       document.querySelectorAll('.meal-name-input').forEach(input => {
-        input.onchange = (e) => meals[e.target.dataset.index].name = e.target.value;
+        input.onchange = e => {
+          meals[e.target.dataset.index].name = e.target.value;
+        };
       });
+
       document.querySelectorAll('.meal-start-input').forEach(input => {
-        input.onchange = (e) => meals[e.target.dataset.index].start = e.target.value;
+        input.onchange = e => {
+          meals[e.target.dataset.index].start = e.target.value;
+        };
       });
+
       document.querySelectorAll('.meal-end-input').forEach(input => {
-        input.onchange = (e) => meals[e.target.dataset.index].end = e.target.value;
+        input.onchange = e => {
+          meals[e.target.dataset.index].end = e.target.value;
+        };
       });
 
       document.querySelectorAll('.btn-day-toggle').forEach(btn => {
         btn.onclick = () => {
           const mealIdx = parseInt(btn.dataset.mealIndex);
           const dayNum = parseInt(btn.dataset.day);
+
           let mDays = [...getMealDays(meals[mealIdx])];
 
           if (mDays.includes(dayNum)) {
@@ -390,24 +514,32 @@
       });
 
       document.querySelectorAll('.btn-delete-meal').forEach(btn => {
-        btn.onclick = (e) => {
+        btn.onclick = e => {
           meals.splice(e.target.dataset.index, 1);
           renderSettings();
         };
       });
     }
 
+    // MOSTRAR PROGRAMA DE COMIDAS
     function renderProgram() {
       programList.innerHTML = '';
+
       meals.forEach(m => {
         const mDays = getMealDays(m);
+
         const daysChips = DAYS_MAP.map(dObj => {
           const active = mDays.includes(dObj.d);
-          return `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${active ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'text-zinc-700'}">${dObj.l}</span>`;
+
+          return `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${active
+            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+            : 'text-zinc-700'}">${dObj.l}</span>`;
         }).join(' ');
 
         const item = document.createElement('div');
-        item.className = 'p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 space-y-2';
+        item.className =
+          'p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 space-y-2';
+
         item.innerHTML = `
           <div class="flex justify-between items-center">
             <span class="font-medium text-zinc-200">${m.name}</span>
@@ -417,28 +549,52 @@
             ${daysChips}
           </div>
         `;
+
         programList.appendChild(item);
       });
     }
 
-    // GESTO DE MANTENER PULSADO 3 SEGUNDOS EN CUALQUIER PARTE DE LA PANTALLA
+    // MANTENER PULSADO 3 SEGUNDOS PARA ACTIVAR/DESACTIVAR AYUNO FORZADO
     let holdTimer = null;
     let wasHoldTriggered = false;
 
     function startHold(e) {
-      if (e.target.closest('#modal-settings') || e.target.closest('#modal-list') || e.target.closest('#top-bar') || e.target.closest('#interaction-unlock-overlay')) return;
+      if (
+        e.target.closest('#modal-settings') ||
+        e.target.closest('#modal-list') ||
+        e.target.closest('#top-bar')
+      ) {
+        return;
+      }
+
       wasHoldTriggered = false;
       clearTimeout(holdTimer);
+
       holdTimer = setTimeout(() => {
         wasHoldTriggered = true;
-        const existingForced = localStorage.getItem('plan3mad_forced_fast_until');
-        if (existingForced && parseInt(existingForced) > Date.now()) {
+
+        const existingForced = localStorage.getItem(
+          'plan3mad_forced_fast_until'
+        );
+
+        if (
+          existingForced &&
+          parseInt(existingForced) > Date.now()
+        ) {
           localStorage.removeItem('plan3mad_forced_fast_until');
         } else {
           const targetTs = getFirstMealOfNextDayTimestamp();
-          localStorage.setItem('plan3mad_forced_fast_until', targetTs);
+
+          localStorage.setItem(
+            'plan3mad_forced_fast_until',
+            targetTs
+          );
         }
-        if (navigator.vibrate) navigator.vibrate(200); // Vibración confirmando el toque mantenido
+
+        if (navigator.vibrate) {
+          navigator.vibrate(200);
+        }
+
         updateApp();
       }, 3000);
     }
@@ -454,12 +610,16 @@
     document.addEventListener('touchend', cancelHold);
     document.addEventListener('touchcancel', cancelHold);
 
-    // EVENTOS Y PANTALLA COMPLETA
+    // EVENTOS DE CONFIGURACIÓN
     document.getElementById('btn-settings').onclick = () => {
       renderSettings();
       modalSettings.classList.remove('hidden');
     };
-    document.getElementById('close-settings').onclick = () => modalSettings.classList.add('hidden');
+
+    document.getElementById('close-settings').onclick = () => {
+      modalSettings.classList.add('hidden');
+    };
+
     document.getElementById('btn-save-settings').onclick = () => {
       saveMeals();
       modalSettings.classList.add('hidden');
@@ -467,7 +627,14 @@
     };
 
     document.getElementById('btn-add-meal').onclick = () => {
-      meals.push({ id: Date.now().toString(), name: 'Nueva Comida', start: '12:00', end: '13:00', days: [...ALL_DAYS] });
+      meals.push({
+        id: Date.now().toString(),
+        name: 'Nueva Comida',
+        start: '12:00',
+        end: '13:00',
+        days: [...ALL_DAYS]
+      });
+
       renderSettings();
     };
 
@@ -475,10 +642,16 @@
       renderProgram();
       modalList.classList.remove('hidden');
     };
-    document.getElementById('close-list').onclick = () => modalList.classList.add('hidden');
-    document.getElementById('btn-close-program').onclick = () => modalList.classList.add('hidden');
 
-    // MODO MAXIMIZAR
+    document.getElementById('close-list').onclick = () => {
+      modalList.classList.add('hidden');
+    };
+
+    document.getElementById('btn-close-program').onclick = () => {
+      modalList.classList.add('hidden');
+    };
+
+    // PANTALLA COMPLETA
     document.getElementById('btn-fullscreen').onclick = () => {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
@@ -492,6 +665,7 @@
 
     document.addEventListener('fullscreenchange', () => {
       exitClickCount = 0;
+
       if (document.fullscreenElement) {
         topBar.classList.add('hidden');
       } else {
@@ -499,16 +673,23 @@
       }
     });
 
-    // SALIR DE PANTALLA COMPLETA HACIENDO CLICK 5 VECES
-    document.body.addEventListener('click', (e) => {
+    // SALIR DE PANTALLA COMPLETA CON 5 CLICS
+    document.body.addEventListener('click', e => {
       if (wasHoldTriggered) {
         wasHoldTriggered = false;
         exitClickCount = 0;
         return;
       }
-      if (document.fullscreenElement && !e.target.closest('#modal-settings') && !e.target.closest('#modal-list') && !e.target.closest('#top-bar')) {
+
+      if (
+        document.fullscreenElement &&
+        !e.target.closest('#modal-settings') &&
+        !e.target.closest('#modal-list') &&
+        !e.target.closest('#top-bar')
+      ) {
         exitClickCount++;
         clearTimeout(exitClickTimer);
+
         exitClickTimer = setTimeout(() => {
           exitClickCount = 0;
         }, 2500);
@@ -520,26 +701,9 @@
       }
     });
 
-    // DESBLOQUEO DE VIBRACIÓN (BOTÓN INICIAL)
-    const overlay = document.getElementById('interaction-unlock-overlay');
-    let interactionUnlocked = false;
-
-    function hideOverlayAndStart(e) {
-      if (interactionUnlocked) return;
-      interactionUnlocked = true;
-      if (e) e.preventDefault();
-
-      overlay.style.display = 'none';
-
-      // Micro-vibración silenciosa de 1ms para forzar al navegador a registrar el permiso
-      if (navigator.vibrate) navigator.vibrate(1);
-
-      updateApp();
-      setInterval(updateApp, 1000);
-    }
-
-    overlay.addEventListener('touchstart', hideOverlayAndStart, { passive: false });
-    overlay.addEventListener('click', hideOverlayAndStart);
+    // Actualizar el semáforo cada segundo
+    setInterval(updateApp, 1000);
+    updateApp();
   </script>
 </body>
 </html>

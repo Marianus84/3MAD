@@ -12,6 +12,17 @@
 </head>
 <body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col items-center justify-center relative p-4 sm:p-6 transition-all duration-1000" id="main-bg">
 
+  <!-- AUDIOS INCORPORADOS (Base64 para funcionar offline) -->
+  <audio id="audio-rooster" preload="auto">
+    <!-- Canto de gallo sutil (Apertura de ventana) -->
+    <source type="audio/mp3" src="data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq">
+  </audio>
+  <audio id="audio-chicken" preload="auto">
+    <!-- Cacareo de gallina sutil (Cierre de ventana) -->
+    <source type="audio/mp3" src="data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq">
+  </audio>
+  <!-- Fin de audios -->
+
   <!-- BARRA SUPERIOR DE BOTONES (Flotante arriba, se oculta al maximizar) -->
   <div id="top-bar" class="absolute top-4 sm:top-6 left-4 right-4 max-w-sm mx-auto flex justify-between items-center z-20 transition-opacity duration-300">
     <button id="btn-settings" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
@@ -34,7 +45,7 @@
 
   <!-- EMOJIS (A medio camino entre la parte superior y la parte alta del semáforo) -->
   <div class="absolute top-16 sm:top-20 left-0 right-0 flex justify-center z-20">
-    <span id="emoji-display" class="text-2xl sm:text-3xl tracking-widest">🐔🔒</span>
+    <span id="emoji-display" class="text-2xl sm:text-3xl tracking-widest transition-all">🐔🔒</span>
   </div>
 
   <!-- SEMÁFORO VERTICAL (EXACTAMENTE EN EL CENTRO DE LA PANTALLA) -->
@@ -117,6 +128,10 @@
     const yellowBulb = document.getElementById('yellow-bulb');
     const greenBulb = document.getElementById('green-bulb');
     const timerDisplay = document.getElementById('timer-display');
+    
+    // Audios
+    const audioRooster = document.getElementById('audio-rooster');
+    const audioChicken = document.getElementById('audio-chicken');
 
     const modalSettings = document.getElementById('modal-settings');
     const modalList = document.getElementById('modal-list');
@@ -177,6 +192,9 @@
     const BULB_ON_YELLOW = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-amber-400 shadow-[0_0_90px_rgba(251,191,36,0.9)] scale-105';
     const BULB_ON_GREEN = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-emerald-500 shadow-[0_0_90px_rgba(16,185,129,0.9)] scale-105';
 
+    // Variable para rastrear el estado anterior y reproducir sonido solo en el cambio
+    let previousState = null; // Puede ser 'GREEN', 'YELLOW', o 'RED'
+
     function updateApp() {
       const now = new Date();
       const currentHour = now.getHours();
@@ -194,11 +212,7 @@
 
       // AYUNO FORZADO (PULSACIÓN DE 3 SEGUNDOS)
       if (forcedFastUntil && currentMs < parseInt(forcedFastUntil)) {
-        redBulb.className = BULB_ON_RED;
-        yellowBulb.className = BULB_OFF_YELLOW;
-        greenBulb.className = BULB_OFF_GREEN;
-        emojiDisplay.textContent = '🐔🔒';
-
+        setTrafficLightState('RED', currentMs);
         const totalSecs = Math.floor((parseInt(forcedFastUntil) - currentMs) / 1000);
         timerDisplay.textContent = formatSeconds(totalSecs);
         return;
@@ -241,28 +255,50 @@
       if (activeMeal) {
         const remainingSecs = (activeMeal.endMins - currentMinutes) * 60 - currentSeconds;
         timerDisplay.textContent = formatSeconds(remainingSecs);
-        emojiDisplay.textContent = '🐔🔓';
 
         if (remainingSecs <= 900) { // Quedan 15 min o menos (transición de Verde a Rojo)
-          // MODO AMARILLO
-          redBulb.className = BULB_OFF_RED;
-          yellowBulb.className = BULB_ON_YELLOW;
-          greenBulb.className = BULB_OFF_GREEN;
+          setTrafficLightState('YELLOW', currentMs);
         } else {
-          // MODO VERDE
-          redBulb.className = BULB_OFF_RED;
-          yellowBulb.className = BULB_OFF_YELLOW;
-          greenBulb.className = BULB_ON_GREEN;
+          setTrafficLightState('GREEN', currentMs);
         }
       } else {
-        // MODO AYUNO (ROJO)
+        const totalSecs = (minMinutesToNext === Infinity ? 0 : minMinutesToNext * 60) - currentSeconds;
+        timerDisplay.textContent = formatSeconds(totalSecs);
+        setTrafficLightState('RED', currentMs);
+      }
+    }
+
+    function setTrafficLightState(newState, currentMs) {
+      // Si el estado cambia a Verde desde Rojo
+      if (newState === 'GREEN' && previousState === 'RED') {
+        audioRooster.currentTime = 0;
+        audioRooster.play().catch(()=>{});
+      }
+      // Si el estado cambia a Rojo desde Verde o Amarillo
+      else if (newState === 'RED' && (previousState === 'GREEN' || previousState === 'YELLOW')) {
+        audioChicken.currentTime = 0;
+        audioChicken.play().catch(()=>{});
+      }
+
+      previousState = newState;
+
+      if (newState === 'GREEN') {
+        redBulb.className = BULB_OFF_RED;
+        yellowBulb.className = BULB_OFF_YELLOW;
+        greenBulb.className = BULB_ON_GREEN;
+        emojiDisplay.textContent = '🐔🔓';
+      } 
+      else if (newState === 'YELLOW') {
+        redBulb.className = BULB_OFF_RED;
+        yellowBulb.className = BULB_ON_YELLOW;
+        greenBulb.className = BULB_OFF_GREEN;
+        emojiDisplay.textContent = '🐔🔓';
+      } 
+      else if (newState === 'RED') {
         redBulb.className = BULB_ON_RED;
         yellowBulb.className = BULB_OFF_YELLOW;
         greenBulb.className = BULB_OFF_GREEN;
         emojiDisplay.textContent = '🐔🔒';
-
-        const totalSecs = (minMinutesToNext === Infinity ? 0 : minMinutesToNext * 60) - currentSeconds;
-        timerDisplay.textContent = formatSeconds(totalSecs);
       }
     }
 
@@ -390,9 +426,12 @@
         const existingForced = localStorage.getItem('plan3mad_forced_fast_until');
         if (existingForced && parseInt(existingForced) > Date.now()) {
           localStorage.removeItem('plan3mad_forced_fast_until');
+          // Forzar refresco de estado para que suene
+          previousState = 'RED'; 
         } else {
           const targetTs = getFirstMealOfNextDayTimestamp();
           localStorage.setItem('plan3mad_forced_fast_until', targetTs);
+          previousState = 'GREEN'; // Forzar que suene el cierre
         }
         if (navigator.vibrate) navigator.vibrate(200);
         updateApp();
@@ -457,6 +496,12 @@
 
     // SALIR DE PANTALLA COMPLETA HACIENDO CLICK 5 VECES
     document.body.addEventListener('click', (e) => {
+      // Habilitar audio en navegadores móviles al hacer el primer clic en la pantalla
+      if(audioRooster.paused && audioChicken.paused) {
+         audioRooster.load();
+         audioChicken.load();
+      }
+
       if (wasHoldTriggered) {
         wasHoldTriggered = false;
         exitClickCount = 0;
@@ -477,6 +522,19 @@
     });
 
     setInterval(updateApp, 1000);
+    
+    // Inicialización de estado para que no suene nada al cargar la app
+    const nowInit = new Date();
+    const currentMinsInit = nowInit.getHours() * 60 + nowInit.getMinutes();
+    let isEatingInit = false;
+    meals.forEach(meal => {
+        const [sH, sM] = meal.start.split(':').map(Number);
+        const [eH, eM] = meal.end.split(':').map(Number);
+        if (getMealDays(meal).includes(nowInit.getDay()) && currentMinsInit >= (sH * 60 + sM) && currentMinsInit < (eH * 60 + eM)) {
+          isEatingInit = true;
+        }
+    });
+    previousState = isEatingInit ? 'GREEN' : 'RED';
     updateApp();
   </script>
 </body>

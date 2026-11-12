@@ -1,709 +1,131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Semáforo de Ayuno - Plan 3MAD</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#000000">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#080b10">
+<title>Presupuesto de calorías</title>
+<style>
+:root{--bg:#080b10;--panel:#121923;--line:#263241;--text:#f4f7fb;--muted:#91a0b2;--green:#43d69a;--blue:#79aaff;--amber:#ffc76a;--red:#ff6e78}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+body{min-height:100dvh;padding:14px;display:flex;justify-content:center}
+button,input{font:inherit}.app{width:min(560px,100%);min-height:calc(100dvh - 28px);display:flex;flex-direction:column;gap:12px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0}
+h1{font-size:20px;line-height:1.15;margin:0;font-weight:750;letter-spacing:-.4px}.date{color:var(--muted);font-size:12px;margin-top:4px;text-transform:capitalize}
+.actions{display:flex;gap:7px}.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:11px;padding:9px 12px;font-size:17px}
+.week-days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.day{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 1px;text-align:center;color:var(--muted);min-width:0}
+.day b{display:block;font-size:11px;color:var(--text)}.day small{display:block;font-size:9px;margin-top:3px}
+.day.active{border:2px solid var(--blue);background:#17263a;color:white}
+.budget{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px 17px}
+.budget-label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.budget-number{font-size:clamp(39px,11vw,58px);font-weight:800;letter-spacing:-2px;line-height:1.1;margin:5px 0 2px;font-variant-numeric:tabular-nums}
+.budget-number span{font-size:15px;letter-spacing:0;color:var(--muted);font-weight:600}
+.budget-detail{font-size:11px;color:var(--muted)}
+.progress{height:6px;background:#293545;border-radius:10px;overflow:hidden;margin-top:11px}.progress i{height:100%;width:0;display:block;background:var(--green);border-radius:10px}
+.weekly .progress i{background:var(--blue)}
+.section-title{font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:3px 1px -4px}
+.meal{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:12px 14px}
+.meal-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.meal-name{font-size:16px;font-weight:700}
+.meal-input-row{display:flex;align-items:center;gap:8px;margin-top:7px}
+.meal-input{width:100%;min-width:0;background:#090e15;border:1px solid #334255;border-radius:10px;color:white;padding:10px 12px;font-size:29px;font-weight:750;outline:none;font-variant-numeric:tabular-nums}
+.meal-input:focus{border-color:var(--blue)}
+.unit{font-size:12px;color:var(--muted)}
+.dinner{border-color:#80632d}
+.dinner-available{margin-top:9px;border-radius:9px;background:#241e14;padding:9px 11px;display:flex;justify-content:space-between;align-items:center;gap:8px;color:#f5d18e;font-size:12px}
+.dinner-available strong{font-size:23px;font-variant-numeric:tabular-nums}
+.summary{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.summary-label{font-size:12px;color:var(--muted)}.summary-value{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+footer{margin-top:auto;text-align:center;color:#667589;font-size:10px;padding:4px 0}
+.modal{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modal.show{display:flex}
+.dialog{width:min(390px,100%);background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:20px}
+.dialog h2{margin:0 0 15px;font-size:19px}.setting{display:block;margin:13px 0;color:var(--muted);font-size:12px}.setting input{display:block;width:100%;margin-top:6px;background:#090e15;color:white;border:1px solid var(--line);border-radius:9px;padding:11px;font-size:19px}
+.dialog-actions{display:flex;gap:8px;margin-top:18px}.dialog-actions button{flex:1;border:0;border-radius:9px;padding:11px;font-weight:700}.save{background:var(--green);color:#062015}.cancel{background:#2a3748;color:white}
+@media(min-height:760px){.app{gap:14px}.budget{padding:18px}.meal{padding:14px 16px}.meal-input{padding:12px}.section-title{margin-top:6px}}
+@media(max-height:650px){body{padding:8px}.app{min-height:calc(100dvh - 16px);gap:7px}h1{font-size:17px}.budget{padding:10px 13px}.budget-number{font-size:36px}.meal{padding:7px 11px}.meal-input{font-size:23px;padding:6px 9px}.dinner-available{padding:6px 9px}.dinner-available strong{font-size:19px}.summary{padding:8px 12px}}
+</style>
 </head>
-
-<body class="bg-black text-white font-sans antialiased overflow-hidden select-none h-screen w-screen flex flex-col items-center justify-center relative p-4 sm:p-6 transition-all duration-1000" id="main-bg">
-
-  <!-- BARRA SUPERIOR -->
-  <div id="top-bar" class="absolute top-4 sm:top-6 left-4 right-4 max-w-sm mx-auto flex justify-between items-center z-20 transition-opacity duration-300">
-    <button id="btn-settings" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
-      <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-      </svg>
-    </button>
-
-    <button id="btn-list" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
-      <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-      </svg>
-    </button>
-
-    <button id="btn-fullscreen" class="p-3 rounded-full bg-zinc-900/80 backdrop-blur border border-zinc-800 shadow-lg active:scale-95 transition-all">
-      <svg class="w-6 h-6 text-zinc-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- EMOJIS -->
-  <div class="absolute top-16 sm:top-20 left-0 right-0 flex justify-center z-20">
-    <span id="emoji-display" class="text-2xl sm:text-3xl tracking-widest">🐔🔒</span>
-  </div>
-
-  <!-- SEMÁFORO -->
-  <div class="flex flex-col items-center justify-center my-auto z-10">
-    <div class="w-40 sm:w-48 bg-zinc-950 p-4 sm:p-5 rounded-[3rem] border-4 border-zinc-900 shadow-2xl flex flex-col items-center space-y-4 sm:space-y-6">
-      <div id="red-bulb" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700"></div>
-      <div id="yellow-bulb" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700"></div>
-      <div id="green-bulb" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700"></div>
-    </div>
-  </div>
-
-  <!-- TEMPORIZADOR -->
-  <div class="absolute bottom-16 sm:bottom-20 left-0 right-0 flex justify-center z-20">
-    <div class="bg-zinc-950 border border-zinc-900/90 backdrop-blur-md px-3.5 py-1 rounded-full shadow-xl flex items-center justify-center">
-      <span id="timer-display" class="font-mono text-sm sm:text-base font-bold tracking-wider text-zinc-300">00:00:00</span>
-    </div>
-  </div>
-
-  <!-- CONFIGURACIÓN DE COMIDAS -->
-  <div id="modal-settings" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-950 border border-zinc-900 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] flex flex-col">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-bold text-white">Configurar Comidas</h2>
-        <button id="close-settings" class="p-2 text-zinc-400 hover:text-white">✕</button>
-      </div>
-
-      <div id="meals-container" class="flex-1 overflow-y-auto space-y-4 pr-1"></div>
-
-      <div class="mt-6 space-y-3">
-        <button id="btn-add-meal" class="w-full py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-bold rounded-xl text-sm border border-zinc-800">
-          + Añadir Comida
-        </button>
-        <button id="btn-save-settings" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-950">
-          Guardar y Cerrar
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROGRAMA DE COMIDAS -->
-  <div id="modal-list" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-950 border border-zinc-900 rounded-3xl w-full max-w-sm p-6 shadow-2xl">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-lg font-bold text-white">Programa de Comidas</h2>
-        <button id="close-list" class="p-2 text-zinc-400 hover:text-white">✕</button>
-      </div>
-      <div id="program-list" class="space-y-3 mb-6"></div>
-      <button id="btn-close-program" class="w-full py-3 bg-zinc-900 text-zinc-300 font-bold rounded-xl">Cerrar</button>
-    </div>
-  </div>
-
-  <script>
-    const ALL_DAYS = [1, 2, 3, 4, 5, 6, 0];
-
-    const DAYS_MAP = [
-      { d: 1, l: 'L' },
-      { d: 2, l: 'M' },
-      { d: 3, l: 'X' },
-      { d: 4, l: 'J' },
-      { d: 5, l: 'V' },
-      { d: 6, l: 'S' },
-      { d: 0, l: 'D' }
-    ];
-
-    const defaultMeals = [
-      { id: '1', name: 'Desayuno', start: '09:00', end: '09:45', days: [...ALL_DAYS] },
-      { id: '2', name: 'Almuerzo', start: '14:00', end: '15:00', days: [...ALL_DAYS] },
-      { id: '3', name: 'Cena', start: '20:00', end: '21:00', days: [...ALL_DAYS] }
-    ];
-
-    let meals = JSON.parse(localStorage.getItem('plan3mad_meal_slots')) || defaultMeals;
-
-    meals = meals.map(m => ({
-      ...m,
-      days: Array.isArray(m.days) && m.days.length > 0 ? m.days : [...ALL_DAYS]
-    }));
-
-    const mainBg = document.getElementById('main-bg');
-    const topBar = document.getElementById('top-bar');
-    const emojiDisplay = document.getElementById('emoji-display');
-    const redBulb = document.getElementById('red-bulb');
-    const yellowBulb = document.getElementById('yellow-bulb');
-    const greenBulb = document.getElementById('green-bulb');
-    const timerDisplay = document.getElementById('timer-display');
-
-    const modalSettings = document.getElementById('modal-settings');
-    const modalList = document.getElementById('modal-list');
-    const mealsContainer = document.getElementById('meals-container');
-    const programList = document.getElementById('program-list');
-
-    // Mantener la pantalla encendida cuando el navegador lo permita
-    if ('wakeLock' in navigator) {
-      navigator.wakeLock.request('screen').catch(() => {});
-    }
-
-    function saveMeals() {
-      localStorage.setItem('plan3mad_meal_slots', JSON.stringify(meals));
-    }
-
-    function getMealDays(meal) {
-      return Array.isArray(meal.days) && meal.days.length > 0
-        ? meal.days
-        : ALL_DAYS;
-    }
-
-    function formatSeconds(totalSecs) {
-      if (totalSecs < 0) return '00:00:00';
-
-      const h = Math.floor(totalSecs / 3600);
-      const m = Math.floor((totalSecs % 3600) / 60);
-      const s = totalSecs % 60;
-
-      return [h, m, s]
-        .map(v => String(v).padStart(2, '0'))
-        .join(':');
-    }
-
-    function getFirstMealOfNextDayTimestamp() {
-      const now = new Date();
-
-      for (let offset = 1; offset <= 7; offset++) {
-        const checkDate = new Date(now);
-        checkDate.setDate(now.getDate() + offset);
-
-        const checkDay = checkDate.getDay();
-        const dayMeals = meals.filter(m =>
-          getMealDays(m).includes(checkDay)
-        );
-
-        if (dayMeals.length > 0) {
-          dayMeals.sort((a, b) => {
-            const [aH, aM] = a.start.split(':').map(Number);
-            const [bH, bM] = b.start.split(':').map(Number);
-
-            return (aH * 60 + aM) - (bH * 60 + bM);
-          });
-
-          const firstMeal = dayMeals[0];
-          const [fH, fM] = firstMeal.start.split(':').map(Number);
-
-          checkDate.setHours(fH, fM, 0, 0);
-          return checkDate.getTime();
-        }
-      }
-
-      return now.getTime() + 24 * 3600 * 1000;
-    }
-
-    // Estilos de los focos apagados
-    const BULB_OFF_RED =
-      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-rose-950/20 opacity-20 border border-rose-900/20';
-
-    const BULB_OFF_YELLOW =
-      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-amber-950/20 opacity-20 border border-amber-900/20';
-
-    const BULB_OFF_GREEN =
-      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-emerald-950/20 opacity-20 border border-emerald-900/20';
-
-    // Estilos de los focos encendidos
-    const BULB_ON_RED =
-      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-rose-500 shadow-[0_0_90px_rgba(244,63,94,0.9)] scale-105';
-
-    const BULB_ON_YELLOW =
-      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-amber-400 shadow-[0_0_90px_rgba(251,191,36,0.9)] scale-105';
-
-    const BULB_ON_GREEN =
-      'w-28 h-28 sm:w-32 sm:h-32 rounded-full transition-all duration-700 bg-emerald-500 shadow-[0_0_90px_rgba(16,185,129,0.9)] scale-105';
-
-    // -------------------------------------------------------
-    // VIBRACIÓN POR CAMBIO DE COLOR
-    // Rojo -> Verde: 1 vibración
-    // Verde -> Amarillo: 2 vibraciones
-    // Amarillo -> Rojo: 3 vibraciones
-    // -------------------------------------------------------
-
-    let previousTrafficState = null;
-
-    function getTrafficState() {
-      const now = new Date();
-
-      const forcedFastUntil = localStorage.getItem(
-        'plan3mad_forced_fast_until'
-      );
-
-      if (
-        forcedFastUntil &&
-        now.getTime() < parseInt(forcedFastUntil)
-      ) {
-        return 'red';
-      }
-
-      const currentDay = now.getDay();
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-      let activeMeal = null;
-
-      meals.forEach(meal => {
-        const mealDays = getMealDays(meal);
-        const [sH, sM] = meal.start.split(':').map(Number);
-        const [eH, eM] = meal.end.split(':').map(Number);
-
-        const startMins = sH * 60 + sM;
-        const endMins = eH * 60 + eM;
-
-        if (
-          mealDays.includes(currentDay) &&
-          currentMinutes >= startMins &&
-          currentMinutes < endMins
-        ) {
-          activeMeal = { ...meal, endMins };
-        }
-      });
-
-      if (!activeMeal) return 'red';
-
-      const remainingSecs =
-        (activeMeal.endMins - currentMinutes) * 60 -
-        now.getSeconds();
-
-      return remainingSecs <= 900 ? 'yellow' : 'green';
-    }
-
-    function vibrateForTransition(nextState) {
-      if (
-        previousTrafficState === null ||
-        previousTrafficState === nextState
-      ) {
-        return;
-      }
-
-      const vibrationPatterns = {
-        'red-green': [200],
-        'green-yellow': [200, 120, 200],
-        'yellow-red': [200, 120, 200, 120, 200]
-      };
-
-      const pattern =
-        vibrationPatterns[`${previousTrafficState}-${nextState}`];
-
-      if (pattern && 'vibrate' in navigator) {
-        navigator.vibrate(pattern);
-      }
-    }
-
-    function updateApp() {
-      const now = new Date();
-
-      const nextTrafficState = getTrafficState();
-      vibrateForTransition(nextTrafficState);
-      previousTrafficState = nextTrafficState;
-
-      const currentHour = now.getHours();
-
-      // Atenuación nocturna: 23:00 a 07:00
-      const isNight = currentHour >= 23 || currentHour < 7;
-
-      if (isNight) {
-        mainBg.classList.add('opacity-30');
-      } else {
-        mainBg.classList.remove('opacity-30');
-      }
-
-      const currentMs = now.getTime();
-      const forcedFastUntil = localStorage.getItem(
-        'plan3mad_forced_fast_until'
-      );
-
-      // Ayuno forzado mediante pulsación de 3 segundos
-      if (
-        forcedFastUntil &&
-        currentMs < parseInt(forcedFastUntil)
-      ) {
-        redBulb.className = BULB_ON_RED;
-        yellowBulb.className = BULB_OFF_YELLOW;
-        greenBulb.className = BULB_OFF_GREEN;
-        emojiDisplay.textContent = '🐔🔒';
-
-        const totalSecs = Math.floor(
-          (parseInt(forcedFastUntil) - currentMs) / 1000
-        );
-
-        timerDisplay.textContent = formatSeconds(totalSecs);
-        return;
-      } else if (forcedFastUntil) {
-        localStorage.removeItem('plan3mad_forced_fast_until');
-      }
-
-      const currentDay = now.getDay();
-      const currentMinutes =
-        currentHour * 60 + now.getMinutes();
-      const currentSeconds = now.getSeconds();
-
-      let activeMeal = null;
-      let minMinutesToNext = Infinity;
-
-      meals.forEach(meal => {
-        const mealDays = getMealDays(meal);
-        const [sH, sM] = meal.start.split(':').map(Number);
-        const [eH, eM] = meal.end.split(':').map(Number);
-
-        const startMins = sH * 60 + sM;
-        const endMins = eH * 60 + eM;
-
-        if (
-          mealDays.includes(currentDay) &&
-          currentMinutes >= startMins &&
-          currentMinutes < endMins
-        ) {
-          activeMeal = { ...meal, endMins };
-        }
-
-        for (let offset = 0; offset < 7; offset++) {
-          const checkDay = (currentDay + offset) % 7;
-
-          if (mealDays.includes(checkDay)) {
-            const diff =
-              offset * 1440 + startMins - currentMinutes;
-
-            if (diff > 0) {
-              if (diff < minMinutesToNext) {
-                minMinutesToNext = diff;
-              }
-              break;
-            }
-          }
-        }
-      });
-
-      if (activeMeal) {
-        const remainingSecs =
-          (activeMeal.endMins - currentMinutes) * 60 -
-          currentSeconds;
-
-        timerDisplay.textContent = formatSeconds(remainingSecs);
-        emojiDisplay.textContent = '🐔🔓';
-
-        if (remainingSecs <= 900) {
-          // Amarillo: quedan 15 minutos o menos
-          redBulb.className = BULB_OFF_RED;
-          yellowBulb.className = BULB_ON_YELLOW;
-          greenBulb.className = BULB_OFF_GREEN;
-        } else {
-          // Verde: ventana de comida abierta
-          redBulb.className = BULB_OFF_RED;
-          yellowBulb.className = BULB_OFF_YELLOW;
-          greenBulb.className = BULB_ON_GREEN;
-        }
-      } else {
-        // Rojo: ayuno
-        redBulb.className = BULB_ON_RED;
-        yellowBulb.className = BULB_OFF_YELLOW;
-        greenBulb.className = BULB_OFF_GREEN;
-        emojiDisplay.textContent = '🐔🔒';
-
-        const totalSecs =
-          (minMinutesToNext === Infinity
-            ? 0
-            : minMinutesToNext * 60) - currentSeconds;
-
-        timerDisplay.textContent = formatSeconds(totalSecs);
-      }
-    }
-
-    // CONFIGURACIÓN DE COMIDAS
-    function renderSettings() {
-      mealsContainer.innerHTML = '';
-
-      meals.forEach((meal, index) => {
-        const mDays = getMealDays(meal);
-
-        const daysButtonsHtml = DAYS_MAP.map(dayObj => {
-          const isActive = mDays.includes(dayObj.d);
-
-          const bgClass = isActive
-            ? 'bg-emerald-600 text-white font-bold border-emerald-500'
-            : 'bg-black text-zinc-600 border-zinc-800 hover:text-zinc-400';
-
-          return `
-            <button
-              type="button"
-              data-meal-index="${index}"
-              data-day="${dayObj.d}"
-              class="btn-day-toggle w-8 h-8 text-xs rounded-xl border transition-all ${bgClass}">
-              ${dayObj.l}
-            </button>
-          `;
-        }).join('');
-
-        const item = document.createElement('div');
-
-        item.className =
-          'bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800 space-y-3';
-
-        item.innerHTML = `
-          <div class="flex justify-between items-center">
-            <input
-              type="text"
-              value="${meal.name}"
-              data-index="${index}"
-              class="meal-name-input bg-transparent font-semibold text-white focus:outline-none border-b border-transparent focus:border-emerald-500" />
-
-            ${meals.length > 1
-              ? `<button data-index="${index}" class="btn-delete-meal text-rose-400 text-xs font-bold hover:text-rose-300">Eliminar</button>`
-              : ''}
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <label class="text-zinc-400 text-xs block mb-1">Inicio</label>
-              <input
-                type="time"
-                value="${meal.start}"
-                data-index="${index}"
-                class="meal-start-input w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono" />
-            </div>
-
-            <div>
-              <label class="text-zinc-400 text-xs block mb-1">Fin</label>
-              <input
-                type="time"
-                value="${meal.end}"
-                data-index="${index}"
-                class="meal-end-input w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono" />
-            </div>
-          </div>
-
-          <div>
-            <label class="text-zinc-400 text-xs block mb-1.5">Días aplicables</label>
-            <div class="flex justify-between items-center">
-              ${daysButtonsHtml}
-            </div>
-          </div>
-        `;
-
-        mealsContainer.appendChild(item);
-      });
-
-      document.querySelectorAll('.meal-name-input').forEach(input => {
-        input.onchange = e => {
-          meals[e.target.dataset.index].name = e.target.value;
-        };
-      });
-
-      document.querySelectorAll('.meal-start-input').forEach(input => {
-        input.onchange = e => {
-          meals[e.target.dataset.index].start = e.target.value;
-        };
-      });
-
-      document.querySelectorAll('.meal-end-input').forEach(input => {
-        input.onchange = e => {
-          meals[e.target.dataset.index].end = e.target.value;
-        };
-      });
-
-      document.querySelectorAll('.btn-day-toggle').forEach(btn => {
-        btn.onclick = () => {
-          const mealIdx = parseInt(btn.dataset.mealIndex);
-          const dayNum = parseInt(btn.dataset.day);
-
-          let mDays = [...getMealDays(meals[mealIdx])];
-
-          if (mDays.includes(dayNum)) {
-            if (mDays.length > 1) {
-              mDays = mDays.filter(d => d !== dayNum);
-            }
-          } else {
-            mDays.push(dayNum);
-          }
-
-          meals[mealIdx].days = mDays;
-          renderSettings();
-        };
-      });
-
-      document.querySelectorAll('.btn-delete-meal').forEach(btn => {
-        btn.onclick = e => {
-          meals.splice(e.target.dataset.index, 1);
-          renderSettings();
-        };
-      });
-    }
-
-    // MOSTRAR PROGRAMA DE COMIDAS
-    function renderProgram() {
-      programList.innerHTML = '';
-
-      meals.forEach(m => {
-        const mDays = getMealDays(m);
-
-        const daysChips = DAYS_MAP.map(dObj => {
-          const active = mDays.includes(dObj.d);
-
-          return `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${active
-            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-            : 'text-zinc-700'}">${dObj.l}</span>`;
-        }).join(' ');
-
-        const item = document.createElement('div');
-        item.className =
-          'p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 space-y-2';
-
-        item.innerHTML = `
-          <div class="flex justify-between items-center">
-            <span class="font-medium text-zinc-200">${m.name}</span>
-            <span class="font-mono text-xs text-emerald-400 font-bold">${m.start} - ${m.end}</span>
-          </div>
-          <div class="flex space-x-1 pt-1 border-t border-zinc-800/60">
-            ${daysChips}
-          </div>
-        `;
-
-        programList.appendChild(item);
-      });
-    }
-
-    // MANTENER PULSADO 3 SEGUNDOS PARA ACTIVAR/DESACTIVAR AYUNO FORZADO
-    let holdTimer = null;
-    let wasHoldTriggered = false;
-
-    function startHold(e) {
-      if (
-        e.target.closest('#modal-settings') ||
-        e.target.closest('#modal-list') ||
-        e.target.closest('#top-bar')
-      ) {
-        return;
-      }
-
-      wasHoldTriggered = false;
-      clearTimeout(holdTimer);
-
-      holdTimer = setTimeout(() => {
-        wasHoldTriggered = true;
-
-        const existingForced = localStorage.getItem(
-          'plan3mad_forced_fast_until'
-        );
-
-        if (
-          existingForced &&
-          parseInt(existingForced) > Date.now()
-        ) {
-          localStorage.removeItem('plan3mad_forced_fast_until');
-        } else {
-          const targetTs = getFirstMealOfNextDayTimestamp();
-
-          localStorage.setItem(
-            'plan3mad_forced_fast_until',
-            targetTs
-          );
-        }
-
-        if (navigator.vibrate) {
-          navigator.vibrate(200);
-        }
-
-        updateApp();
-      }, 3000);
-    }
-
-    function cancelHold() {
-      clearTimeout(holdTimer);
-    }
-
-    document.addEventListener('mousedown', startHold);
-    document.addEventListener('mouseup', cancelHold);
-    document.addEventListener('mouseleave', cancelHold);
-    document.addEventListener('touchstart', startHold, { passive: true });
-    document.addEventListener('touchend', cancelHold);
-    document.addEventListener('touchcancel', cancelHold);
-
-    // EVENTOS DE CONFIGURACIÓN
-    document.getElementById('btn-settings').onclick = () => {
-      renderSettings();
-      modalSettings.classList.remove('hidden');
-    };
-
-    document.getElementById('close-settings').onclick = () => {
-      modalSettings.classList.add('hidden');
-    };
-
-    document.getElementById('btn-save-settings').onclick = () => {
-      saveMeals();
-      modalSettings.classList.add('hidden');
-      updateApp();
-    };
-
-    document.getElementById('btn-add-meal').onclick = () => {
-      meals.push({
-        id: Date.now().toString(),
-        name: 'Nueva Comida',
-        start: '12:00',
-        end: '13:00',
-        days: [...ALL_DAYS]
-      });
-
-      renderSettings();
-    };
-
-    document.getElementById('btn-list').onclick = () => {
-      renderProgram();
-      modalList.classList.remove('hidden');
-    };
-
-    document.getElementById('close-list').onclick = () => {
-      modalList.classList.add('hidden');
-    };
-
-    document.getElementById('btn-close-program').onclick = () => {
-      modalList.classList.add('hidden');
-    };
-
-    // PANTALLA COMPLETA
-    document.getElementById('btn-fullscreen').onclick = () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen().catch(() => {});
-      }
-    };
-
-    let exitClickCount = 0;
-    let exitClickTimer = null;
-
-    document.addEventListener('fullscreenchange', () => {
-      exitClickCount = 0;
-
-      if (document.fullscreenElement) {
-        topBar.classList.add('hidden');
-      } else {
-        topBar.classList.remove('hidden');
-      }
-    });
-
-    // SALIR DE PANTALLA COMPLETA CON 5 CLICS
-    document.body.addEventListener('click', e => {
-      if (wasHoldTriggered) {
-        wasHoldTriggered = false;
-        exitClickCount = 0;
-        return;
-      }
-
-      if (
-        document.fullscreenElement &&
-        !e.target.closest('#modal-settings') &&
-        !e.target.closest('#modal-list') &&
-        !e.target.closest('#top-bar')
-      ) {
-        exitClickCount++;
-        clearTimeout(exitClickTimer);
-
-        exitClickTimer = setTimeout(() => {
-          exitClickCount = 0;
-        }, 2500);
-
-        if (exitClickCount >= 5) {
-          exitClickCount = 0;
-          document.exitFullscreen().catch(() => {});
-        }
-      }
-    });
-
-    // Actualizar el semáforo cada segundo
-    setInterval(updateApp, 1000);
-    updateApp();
-  </script>
+<body>
+<main class="app">
+<header>
+ <div><h1>Presupuesto de calorías</h1><div class="date" id="dateLabel"></div></div>
+ <div class="actions"><button class="btn" id="settingsBtn" aria-label="Configurar presupuestos">⚙</button><button class="btn" id="fullscreenBtn" aria-label="Pantalla completa">⛶</button></div>
+</header>
+<nav class="week-days" id="dayStrip"></nav>
+<section class="budget">
+ <div class="budget-label">Restante hoy</div>
+ <div class="budget-number" id="dailyRemaining">2.500 <span>kcal</span></div>
+ <div class="budget-detail" id="dailyNote">Presupuesto diario: 2.500 kcal</div>
+ <div class="progress"><i id="dailyBar"></i></div>
+</section>
+<div class="section-title">Calorías por comida</div>
+<section class="meal">
+ <div class="meal-top"><label class="meal-name" for="breakfast">Desayuno</label></div>
+ <div class="meal-input-row"><input class="meal-input" id="breakfast" type="number" inputmode="numeric" min="0" placeholder="0"><span class="unit">kcal</span></div>
+</section>
+<section class="meal">
+ <div class="meal-top"><label class="meal-name" for="lunch">Almuerzo</label></div>
+ <div class="meal-input-row"><input class="meal-input" id="lunch" type="number" inputmode="numeric" min="0" placeholder="0"><span class="unit">kcal</span></div>
+</section>
+<section class="meal dinner">
+ <div class="meal-top"><label class="meal-name" for="dinner">Cena</label></div>
+ <div class="meal-input-row"><input class="meal-input" id="dinner" type="number" inputmode="numeric" min="0" placeholder="0"><span class="unit">kcal</span></div>
+ <div class="dinner-available"><span>Disponibles para la cena</span><strong id="dinnerAvailable">2.500 kcal</strong></div>
+</section>
+<section class="summary">
+ <div><div class="summary-label">Restante de la semana</div><div class="budget-detail" id="weeklyNote">0 kcal consumidas</div></div>
+ <div class="summary-value" id="weeklyRemaining">17.500 kcal</div>
+</section>
+<section class="summary">
+ <div><div class="summary-label">Total consumido hoy</div><div class="budget-detail">Desayuno + almuerzo + cena</div></div>
+ <div class="summary-value" id="todayTotal">0 kcal</div>
+</section>
+<footer>Los datos se guardan automáticamente en este móvil</footer>
+</main>
+<div class="modal" id="settingsModal"><div class="dialog">
+ <h2>Presupuestos</h2>
+ <label class="setting">Presupuesto diario (kcal)<input id="dailyBudgetInput" type="number" min="1" step="50"></label>
+ <label class="setting">Presupuesto semanal (kcal)<input id="weeklyBudgetInput" type="number" min="1" step="100"></label>
+ <div class="dialog-actions"><button class="cancel" id="cancelSettings">Cancelar</button><button class="save" id="saveSettings">Guardar</button></div>
+</div></div>
+<script>
+const STORE='kitchen_calorie_dashboard_v1',DEFAULTS={dailyBudget:2500,weeklyBudget:17500,days:{}};
+let state;try{state={...DEFAULTS,...JSON.parse(localStorage.getItem(STORE))}}catch{state={...DEFAULTS}}state.days=state.days||{};
+let selectedDate=new Date();selectedDate.setHours(12,0,0,0);
+const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('es-ES');
+const key=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const fromKey=k=>{let [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d,12)};
+const getDay=k=>state.days[k]||{breakfast:0,lunch:0,dinner:0};
+const total=d=>(+d.breakfast||0)+(+d.lunch||0)+(+d.dinner||0);
+const startWeek=d=>{let x=new Date(d);x.setDate(x.getDate()-(x.getDay()+6)%7);return x};
+const weekKeys=()=>{let s=startWeek(selectedDate);return Array.from({length:7},(_,i)=>{let x=new Date(s);x.setDate(s.getDate()+i);return key(x)})};
+function save(){localStorage.setItem(STORE,JSON.stringify(state))}
+function updateMeal(meal,value){let k=key(selectedDate);if(!state.days[k])state.days[k]={breakfast:0,lunch:0,dinner:0};state.days[k][meal]=Math.max(0,+value||0);save();render()}
+function render(){
+ let k=key(selectedDate),d=getDay(k),used=total(d),dailyLeft=state.dailyBudget-used;
+ $('dateLabel').textContent=selectedDate.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+ ['breakfast','lunch','dinner'].forEach(m=>$(m).value=d[m]||'');
+ $('dailyRemaining').innerHTML=`${fmt(dailyLeft)} <span>kcal</span>`;
+ $('dailyNote').textContent=`Presupuesto diario: ${fmt(state.dailyBudget)} kcal · Consumidas: ${fmt(used)}`;
+ $('dailyBar').style.width=Math.min(100,Math.max(0,used/state.dailyBudget*100))+'%';
+ $('dailyBar').style.background=dailyLeft<0?'var(--red)':'var(--green)';
+ let dinnerLeft=state.dailyBudget-(+d.breakfast||0)-(+d.lunch||0);
+ $('dinnerAvailable').textContent=fmt(dinnerLeft)+' kcal';$('dinnerAvailable').style.color=dinnerLeft<0?'var(--red)':'#f5d18e';
+ $('todayTotal').textContent=fmt(used)+' kcal';
+ let keys=weekKeys(),weekUsed=keys.reduce((s,x)=>s+total(getDay(x)),0),weekLeft=state.weeklyBudget-weekUsed;
+ $('weeklyRemaining').textContent=fmt(weekLeft)+' kcal';$('weeklyNote').textContent=`${fmt(weekUsed)} de ${fmt(state.weeklyBudget)} kcal consumidas`;
+ let labels=['L','M','X','J','V','S','D'];
+ $('dayStrip').innerHTML=keys.map((x,i)=>`<button class="day ${x===k?'active':''}" data-key="${x}"><b>${labels[i]}</b><small>${total(getDay(x))?fmt(total(getDay(x))):'—'}</small></button>`).join('');
+ document.querySelectorAll('.day').forEach(b=>b.onclick=()=>{selectedDate=fromKey(b.dataset.key);render()});
+}
+[['breakfast','breakfast'],['lunch','lunch'],['dinner','dinner']].forEach(([id,m])=>$(id).addEventListener('input',e=>updateMeal(m,e.target.value)));
+$('settingsBtn').onclick=()=>{$('dailyBudgetInput').value=state.dailyBudget;$('weeklyBudgetInput').value=state.weeklyBudget;$('settingsModal').classList.add('show')};
+$('cancelSettings').onclick=()=>$('settingsModal').classList.remove('show');
+$('saveSettings').onclick=()=>{let d=+$('dailyBudgetInput').value,w=+$('weeklyBudgetInput').value;if(d>0&&w>0){state.dailyBudget=d;state.weeklyBudget=w;save();$('settingsModal').classList.remove('show');render()}};
+$('fullscreenBtn').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch{}};
+async function wake(){try{if(navigator.wakeLock)await navigator.wakeLock.request('screen')}catch{}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wake()});wake();render();
+</script>
 </body>
 </html>
